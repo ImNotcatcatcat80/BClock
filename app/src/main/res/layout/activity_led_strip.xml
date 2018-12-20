@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LedStripActivity">
+
+    <NumberPicker
+        android:id="@+id/numberPickerR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/numberPickerG"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/numberPickerG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/numberPickerB"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/numberPickerR"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/numberPickerB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/numberPickerG"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextLedStripIP"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:hint="Partner IP"
+        android:inputType="phone"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/numberPickerB"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerR" />
+
+    <SeekBar
+        android:id="@+id/seekBarLeds"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:max="10"
+        android:progress="3"
+        app:layout_constraintEnd_toEndOf="@+id/numberPickerB"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerR"
+        app:layout_constraintTop_toBottomOf="@+id/numberPickerG" />
+
+    <Switch
+        android:id="@+id/switchReverseLedStrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Reverse "
+        app:layout_constraintEnd_toEndOf="@+id/seekBarLeds"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarLeds" />
+
+    <TextView
+        android:id="@+id/textViewLedNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/switchReverseLedStrip"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerR"
+        app:layout_constraintTop_toTopOf="@+id/switchReverseLedStrip"
+        tools:text="LEDs: 7" />
+
+    <TextView
+        android:id="@+id/textViewLabelLedStripIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Led Strip device"
+        app:layout_constraintBottom_toTopOf="@+id/editTextLedStripIP"
+        app:layout_constraintStart_toStartOf="@+id/editTextLedStripIP" />
+
+    <TextView
+        android:id="@+id/textViewLedStripStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:text="..status.."
+        app:layout_constraintBottom_toTopOf="@+id/editTextLedStripIP"
+        app:layout_constraintEnd_toEndOf="@+id/editTextLedStripIP" />
+
+    <TextView
+        android:id="@+id/textViewLabelR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="R"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/numberPickerR"
+        app:layout_constraintEnd_toEndOf="@+id/numberPickerR"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerR" />
+
+    <TextView
+        android:id="@+id/textViewLabelG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="G"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/numberPickerG"
+        app:layout_constraintEnd_toEndOf="@+id/numberPickerG"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerG" />
+
+    <TextView
+        android:id="@+id/textViewB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="B"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/numberPickerB"
+        app:layout_constraintEnd_toEndOf="@+id/numberPickerB"
+        app:layout_constraintStart_toStartOf="@+id/numberPickerB" />
+
+    <Switch
+        android:id="@+id/switchBT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="BT "
+        app:layout_constraintEnd_toEndOf="@+id/switchReverseLedStrip"
+        app:layout_constraintTop_toBottomOf="@+id/switchReverseLedStrip" />
+
+</android.support.constraint.ConstraintLayout>

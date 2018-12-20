@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">BelClock</string>
+    <string name="action_settings">Options</string>
+    <string name="action_sensors">Sensors</string>
+    <string name="action_stopwatch">Stopwatch</string>
+    <string name="action_web_browser">Web Browser</string>
+    <string name="action_led_commands">Led Strip Commands</string>
+    <string-array name="listView_items">
+        <item>Pippo</item>
+        <item>Pelo</item>
+        <item>Ano</item>
+        <item>Nano</item>
+        <item>Biiiiip!</item>
+    </string-array>
+</resources>

@@ -1,0 +1,204 @@
+package it.zerozero.belclock;
+
+import android.Manifest;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.SeekBar;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import java.util.Locale;
+
+public class LedStripActivity extends AppCompatActivity {
+
+    private NumberPicker numberPickerR;
+    private NumberPicker numberPickerG;
+    private NumberPicker numberPickerB;
+    private EditText editTextLedStripIP;
+    private TextView textViewLabelLedStripDevice;
+    private TextView textViewLedStripStatus;
+    private SeekBar seekBarLeds;
+    private Switch switchReverseLedStrip;
+    private Switch switchBT;
+    private TextView textViewLedNo;
+    private static final int PERMISSION_BLUETOOTH = 30030;
+    private static final int PERMISSION_BLUETOOTH_ADMIN = 30033;
+    private static final int PERMISSION_LOCATION_COARSE = 30040;
+    private boolean bluetoothPermissionGranted = false;
+    private boolean bluetoothAdminPermissionGranted = false;
+    private boolean locationCoarsePermissionGranted = false;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor preferencesEditor;
+    private LedStripCommands ledStripCommands;
+    private Runnable updateComms;
+    private Handler updateCommsHnd;
+    private boolean ledStripReversed = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_led_strip);
+
+        numberPickerR = findViewById(R.id.numberPickerR);
+        numberPickerG = findViewById(R.id.numberPickerG);
+        numberPickerB = findViewById(R.id.numberPickerB);
+        editTextLedStripIP = findViewById(R.id.editTextLedStripIP);
+        textViewLabelLedStripDevice = findViewById(R.id.textViewLabelLedStripIP);
+        textViewLedStripStatus = findViewById(R.id.textViewLedStripStatus);
+        seekBarLeds = findViewById(R.id.seekBarLeds);
+        textViewLedNo = findViewById(R.id.textViewLedNo);
+        switchBT = findViewById(R.id.switchBT);
+        switchBT.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    checkBtPermissions();
+                    Log.i("BT permGranted", String.valueOf(bluetoothPermissionGranted));
+                    Log.i("BT Admin permGranted", String.valueOf(bluetoothAdminPermissionGranted));
+                }
+            }
+        });
+        switchReverseLedStrip = findViewById(R.id.switchReverseLedStrip);
+        switchReverseLedStrip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ledStripReversed = isChecked;
+            }
+        });
+
+        numberPickerR.setMinValue(0);
+        numberPickerG.setMinValue(0);
+        numberPickerB.setMinValue(0);
+        numberPickerR.setMaxValue(31);
+        numberPickerG.setMaxValue(31);
+        numberPickerB.setMaxValue(31);
+        seekBarLeds.setEnabled(true);
+        seekBarLeds.setMax(7);
+        seekBarLeds.setProgress(0);
+
+        updateCommsHnd = new Handler();
+        updateComms = new Runnable() {
+            @Override
+            public void run() {
+                ledStripCommands = new LedStripCommands();
+                int r = numberPickerR.getValue();
+                int g = numberPickerG.getValue();
+                int b = numberPickerB.getValue();
+                int[] colorsAr = new int[ledStripCommands.LEDSTRIP_LENGTH];
+                for (int q = 0; q < ledStripCommands.LEDSTRIP_LENGTH; q++) {
+                    if ((q < seekBarLeds.getProgress() &! ledStripReversed) || (q > seekBarLeds.getProgress() && ledStripReversed)) {
+                        colorsAr[q] = Color.rgb(r, g, b);
+                    }
+                    else {
+                        colorsAr[q] = Color.BLACK;
+                    }
+                }
+                ledStripCommands.setLedColorsAr(colorsAr);
+                SendLedCommands sendLedCommands = new SendLedCommands();
+                sendLedCommands.setData(editTextLedStripIP.getText().toString(), 19881);
+                sendLedCommands.execute(ledStripCommands);
+                if (!ledStripReversed) {
+                    // textViewLedNo.setText(String.valueOf(seekBarLeds.getProgress()));
+                    textViewLedNo.setText(String.format(Locale.ITALIAN, "LEDs: %d", seekBarLeds.getProgress()));
+                } else {
+                    // textViewLedNo.setText(String.valueOf(7 - seekBarLeds.getProgress()));
+                    textViewLedNo.setText(String.format(Locale.ITALIAN, "LEDs: %d", 7 - seekBarLeds.getProgress()));
+                }
+                Log.i("updateComms", "run()");
+                updateCommsHnd.postDelayed(this, 1000);
+            }
+        };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCommsHnd.post(updateComms);
+        sharedPreferences = getSharedPreferences("BelClock", MODE_PRIVATE);
+        preferencesEditor = sharedPreferences.edit();
+        editTextLedStripIP.setText(sharedPreferences.getString("ledStripIP", "0.0.0.0"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updateCommsHnd.removeCallbacks(updateComms);
+        preferencesEditor.putString("ledStripIP", editTextLedStripIP.getText().toString());
+        preferencesEditor.commit();
+    }
+
+    void checkBtPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, PERMISSION_BLUETOOTH);
+        }
+        else {
+            bluetoothPermissionGranted = true;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, PERMISSION_BLUETOOTH_ADMIN);
+        }
+        else {
+            bluetoothAdminPermissionGranted = true;
+        }
+    }
+
+    class SendLedCommands extends AsyncTask {
+
+        private String ip;
+        private int port;
+        private String reply;
+
+        protected void setData(String setIp, int setPort) {
+            ip = setIp;
+            port = setPort;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            textViewLedStripStatus.setText("..connecting..");
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            if(objects[0] instanceof LedStripCommands == false) {
+                Log.e("SendLedCommands", "incompatible types");
+                reply = "error";
+            }
+            else {
+                Gson gson = new Gson();
+                String JSONStr = gson.toJson(objects[0]);
+                try {
+                    TCPClient tcpClient = new TCPClient();
+                    reply = tcpClient.sendReceiveStr(ip, port, JSONStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return reply;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if(reply.equals("<ConnectedToLedStripDevice>")) {
+                textViewLedStripStatus.setText("connected");
+            }
+
+        }
+    }
+
+}
