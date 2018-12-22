@@ -99,7 +99,7 @@ public class LedStripActivity extends AppCompatActivity {
                 int b = numberPickerB.getValue();
                 int[] colorsAr = new int[ledStripCommands.LEDSTRIP_LENGTH];
                 for (int q = 0; q < ledStripCommands.LEDSTRIP_LENGTH; q++) {
-                    if ((q < seekBarLeds.getProgress() &! ledStripReversed) || (q > seekBarLeds.getProgress() && ledStripReversed)) {
+                    if ((q < seekBarLeds.getProgress() &! ledStripReversed) || (q >= seekBarLeds.getProgress() && ledStripReversed)) {
                         colorsAr[q] = Color.rgb(r, g, b);
                     }
                     else {
@@ -111,10 +111,8 @@ public class LedStripActivity extends AppCompatActivity {
                 sendLedCommands.setData(editTextLedStripIP.getText().toString(), 19881);
                 sendLedCommands.execute(ledStripCommands);
                 if (!ledStripReversed) {
-                    // textViewLedNo.setText(String.valueOf(seekBarLeds.getProgress()));
                     textViewLedNo.setText(String.format(Locale.ITALIAN, "LEDs: %d", seekBarLeds.getProgress()));
                 } else {
-                    // textViewLedNo.setText(String.valueOf(7 - seekBarLeds.getProgress()));
                     textViewLedNo.setText(String.format(Locale.ITALIAN, "LEDs: %d", 7 - seekBarLeds.getProgress()));
                 }
                 Log.i("updateComms", "run()");
@@ -169,7 +167,7 @@ public class LedStripActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            textViewLedStripStatus.setText("..connecting..");
+            textViewLedStripStatus.setText(R.string.LedStrip_conn_wait);
         }
 
         @Override
@@ -195,7 +193,7 @@ public class LedStripActivity extends AppCompatActivity {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             if(reply.equals("<ConnectedToLedStripDevice>")) {
-                textViewLedStripStatus.setText("connected");
+                textViewLedStripStatus.setText(R.string.LedStrip_conn_connected);
             }
 
         }

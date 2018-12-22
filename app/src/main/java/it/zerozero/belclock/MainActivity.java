@@ -15,6 +15,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean isTransition;
     private boolean speechOverride = false;
     private final int SPEECH_REQ_CODE = 3330;
+    private static final String BELCLOCK_NOTIF_CHANN = "BelClock_3039_notifChannel";
     private NotificationManager notificationManager;
 
     @Override
@@ -95,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         };
 
-        // NotificationChannel BCnotificationChannel = new NotificationChannel("BCstdNotif", "BCNotif", NotificationManager.IMPORTANCE_NONE);
+        createNotificationChannel();
+
         mSensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         mAccelSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -204,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Oscillator.goFlag = false;
 
         if (isCreateNotif &! isTransition) {
-            NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this) // For API26+: uncomment new NotificationChannel in onCreate and parameter "BCstdNotif" to this call
+            NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_NOTIF_CHANN)
                     .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
                     .setContentTitle("BelClock - onPause()")
                     .setContentText("At: " + Calendar.getInstance().getTime().toString())
@@ -267,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return true;
         }
         if (id == R.id.action_web_browser) {
+            isTransition = true;
             String url = "http://www.google.com";
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(000000);
@@ -284,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             infoDialog.show(getSupportFragmentManager(), "info0");
         }
         if (id == 1) {
+            isTransition = true;
             Intent ledActivityIntent = new Intent(this, LedStripActivity.class);
             startActivity(ledActivityIntent);
         }
@@ -345,6 +350,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Exception calling speech recognition.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notif_channel_name);
+            String description = getString(R.string.notif_channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(BELCLOCK_NOTIF_CHANN, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
