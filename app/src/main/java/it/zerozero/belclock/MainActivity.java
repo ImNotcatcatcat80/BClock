@@ -206,11 +206,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSensorManager.unregisterListener(this);
         Oscillator.goFlag = false;
 
+        Intent resumeIntent = new Intent(this, MainActivity.class);
+        resumeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resumeIntent, 0);
+
         if (isCreateNotif &! isTransition) {
             NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_NOTIF_CHANN)
                     .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
                     .setContentTitle("BelClock - onPause()")
                     .setContentText("At: " + Calendar.getInstance().getTime().toString())
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
                     .setLights(0x80ffffff, 500, 2500);
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(10234, notBuilder.build());  // "10234" è un id arbitrario per aggiornare poi la notifica
