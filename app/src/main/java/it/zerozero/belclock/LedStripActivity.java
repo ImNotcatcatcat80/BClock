@@ -33,6 +33,7 @@ public class LedStripActivity extends AppCompatActivity {
     private SeekBar seekBarLeds;
     private Switch switchReverseLedStrip;
     private Switch switchBT;
+    private Switch switchNSD;
     private TextView textViewLedNo;
     private static final int PERMISSION_BLUETOOTH = 30030;
     private static final int PERMISSION_BLUETOOTH_ADMIN = 30033;
@@ -46,6 +47,7 @@ public class LedStripActivity extends AppCompatActivity {
     private Runnable updateComms;
     private Handler updateCommsHnd;
     private boolean ledStripReversed = false;
+    private NsdHelper nsdHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,23 @@ public class LedStripActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ledStripReversed = isChecked;
+            }
+        });
+        switchNSD = findViewById(R.id.switchNSD);
+        switchNSD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    nsdHelper = new NsdHelper(getApplicationContext());
+                    nsdHelper.initializeDiscoveryListener();
+                    nsdHelper.initializeResolveListener();
+                    nsdHelper.startDiscovery();
+                }
+                else {
+                    if(nsdHelper != null) {
+                        nsdHelper.stopDiscovery();
+                    }
+                }
             }
         });
 
