@@ -1,11 +1,14 @@
 package it.zerozero.belclock;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +41,7 @@ public class LedStripActivity extends AppCompatActivity {
     private static final int PERMISSION_BLUETOOTH = 30030;
     private static final int PERMISSION_BLUETOOTH_ADMIN = 30033;
     private static final int PERMISSION_LOCATION_COARSE = 30040;
+    private static final int REQUEST_ENABLE_BLUETOOTH = 30048;
     private boolean bluetoothPermissionGranted = false;
     private boolean bluetoothAdminPermissionGranted = false;
     private boolean locationCoarsePermissionGranted = false;
@@ -48,6 +52,7 @@ public class LedStripActivity extends AppCompatActivity {
     private Handler updateCommsHnd;
     private boolean ledStripReversed = false;
     private NsdHelper nsdHelper;
+    private BluetoothAdapter mBluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +72,27 @@ public class LedStripActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    checkBtPermissions();
+                    boolean btPermissionsOk = checkBtPermissions();
                     Log.i("BT permGranted", String.valueOf(bluetoothPermissionGranted));
                     Log.i("BT Admin permGranted", String.valueOf(bluetoothAdminPermissionGranted));
+                    if (btPermissionsOk) {
+                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (mBluetoothAdapter == null) {
+                            Log.e("mBluetoothAdapter", "is null.");
+                        }
+                        else {
+                            if (!mBluetoothAdapter.isEnabled()) {
+                                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+                            }
+                            else {
+                                Log.i("mBluetoothAdapter", "enabled.");
+                            }
+                        }
+                    }
+                    else {
+                        switchBT.setChecked(false);
+                    }
                 }
             }
         });
@@ -157,7 +180,7 @@ public class LedStripActivity extends AppCompatActivity {
         preferencesEditor.commit();
     }
 
-    void checkBtPermissions() {
+    boolean checkBtPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, PERMISSION_BLUETOOTH);
         }
@@ -169,6 +192,47 @@ public class LedStripActivity extends AppCompatActivity {
         }
         else {
             bluetoothAdminPermissionGranted = true;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_LOCATION_COARSE);
+        }
+        else {
+            locationCoarsePermissionGranted = true;
+        }
+        return bluetoothPermissionGranted && bluetoothAdminPermissionGranted && locationCoarsePermissionGranted;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length != 0) {
+            if (requestCode == PERMISSION_BLUETOOTH) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    bluetoothPermissionGranted = true;
+                }
+                else {
+                    bluetoothPermissionGranted = false;
+                    Log.e("bluetoothPermission", "NOT GRANTED.");
+                }
+            }
+            if (requestCode == PERMISSION_BLUETOOTH_ADMIN) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    bluetoothAdminPermissionGranted = true;
+                }
+                else {
+                    bluetoothAdminPermissionGranted = false;
+                    Log.e("bluetoothAdminPerm", "NOT GRANTED.");
+                }
+            }
+            if (requestCode == PERMISSION_LOCATION_COARSE) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationCoarsePermissionGranted = true;
+                }
+                else {
+                    locationCoarsePermissionGranted = false;
+                    Log.e("locationCoarsePerm", "NOT GRANTED.");
+                }
+            }
         }
     }
 
