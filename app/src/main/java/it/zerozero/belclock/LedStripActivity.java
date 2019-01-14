@@ -32,7 +32,7 @@ public class LedStripActivity extends AppCompatActivity {
     private NumberPicker numberPickerB;
     private EditText editTextLedStripIP;
     private TextView textViewLabelLedStripDevice;
-    private TextView textViewLedStripStatus;
+    private static TextView textViewLedStripStatus;
     private SeekBar seekBarLeds;
     private Switch switchReverseLedStrip;
     private Switch switchBT;
@@ -163,6 +163,10 @@ public class LedStripActivity extends AppCompatActivity {
         };
     }
 
+    private static void setStatusText(String status) {
+        textViewLedStripStatus.setText(status);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -236,7 +240,7 @@ public class LedStripActivity extends AppCompatActivity {
         }
     }
 
-    class SendLedCommands extends AsyncTask {
+    static class SendLedCommands extends AsyncTask {
 
         private String ip;
         private int port;
@@ -250,7 +254,8 @@ public class LedStripActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            textViewLedStripStatus.setText(R.string.LedStrip_conn_wait);
+            // textViewLedStripStatus.setText(R.string.LedStrip_conn_wait);
+            setStatusText("..wait..");
         }
 
         @Override
@@ -276,7 +281,8 @@ public class LedStripActivity extends AppCompatActivity {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             if(reply.equals("<ConnectedToLedStripDevice>")) {
-                textViewLedStripStatus.setText(R.string.LedStrip_conn_connected);
+                // textViewLedStripStatus.setText(R.string.LedStrip_conn_connected);
+                setStatusText("connected");
             }
 
         }

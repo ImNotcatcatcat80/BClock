@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     numClicks = 0;
                 }
 
-                if (numClicks > 5) {
+                if (numClicks > 1) {
                     numClicks = 0;
 
                     listenSpeech();
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Intent speakIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speakIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speakIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        speakIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, Locale.getDefault().toString());
+        speakIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak your clock label: ");
         try {
             startActivityForResult(speakIntent, SPEECH_REQ_CODE);
         }
