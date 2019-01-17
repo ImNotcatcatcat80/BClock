@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onActivityResult(requestCode, resultCode, data);
 
         speechOverride = true;
-        isTransition = true;
+        isTransition = false;
         switch (requestCode) {
             case SPEECH_REQ_CODE:
             {
@@ -344,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void listenSpeech() {
+        isTransition = true;
         Intent speakIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speakIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speakIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
