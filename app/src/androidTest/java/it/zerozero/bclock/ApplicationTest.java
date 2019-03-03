@@ -1,4 +1,4 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,10 +1,9 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -14,15 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 

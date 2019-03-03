@@ -1,14 +1,11 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -129,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     listenSpeech();
 
                     /** Per setActionButton(); da qui...
-                     Intent mainIntent =new Intent("it.zerozero.belclock.MainActivity");
+                     Intent mainIntent =new Intent("it.zerozero.bclock.MainActivity");
                      PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 4320, mainIntent,0);
                      Bitmap icon = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_dialog_dialer);
                      builder.setActionButton(icon, "iconDescription", pendingIntent, false);
@@ -242,6 +239,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mi1.setIcon(R.drawable.ic_computer_white_24dp);
             mi1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
+        MenuItem mi2 = menu.add(0, 2, 2, "Item2");
+        mi2.setIcon(R.drawable.ic_check_box_white_24dp);
+        mi2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
 
@@ -291,6 +291,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             InfoDialog infoDialog = new InfoDialog();
             infoDialog.show(getSupportFragmentManager(), "info0");
         }
+        if (id == 2) {
+            Intent backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
+            startService(backgroudClockService);
+        }
         if (id == 1) {
             isTransition = true;
             Intent ledActivityIntent = new Intent(this, LedStripActivity.class);
@@ -301,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Intent terminalIntent = new Intent(this, TerminalActivity.class);
             startActivity(terminalIntent);
         }
-
         return super.onOptionsItemSelected(item);
     }
 

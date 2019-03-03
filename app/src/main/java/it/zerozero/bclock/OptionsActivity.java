@@ -1,4 +1,4 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

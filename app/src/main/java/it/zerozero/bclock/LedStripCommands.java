@@ -1,7 +1,6 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
 import android.graphics.Color;
-import android.util.Log;
 
 public class LedStripCommands {
 

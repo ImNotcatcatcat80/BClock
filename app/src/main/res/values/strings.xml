@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BelClock</string>
+    <string name="app_name">BClock</string>
     <string name="action_settings">Options</string>
     <string name="action_sensors">Sensors</string>
     <string name="action_stopwatch">Stopwatch</string>

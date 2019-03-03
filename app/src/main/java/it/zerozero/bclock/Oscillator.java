@@ -1,4 +1,4 @@
-package it.zerozero.belclock;
+package it.zerozero.bclock;
 
 import android.os.Handler;
 import android.os.Message;

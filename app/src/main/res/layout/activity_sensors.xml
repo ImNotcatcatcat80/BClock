@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="it.zerozero.belclock.SensorsActivity">
+    tools:context="it.zerozero.bclock.SensorsActivity">
 
     <TextView
         android:text="Sensors:"
