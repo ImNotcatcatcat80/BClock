@@ -219,6 +219,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(10234, notBuilder.build());  // "10234" è un id arbitrario per aggiornare poi la notifica
         }
+
+        Intent backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
+        startService(backgroudClockService);
     }
 
     @Override
@@ -233,9 +236,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.add(0, 1, 1, "Led Strip Commands");
+        menu.add(0, 1, 0, "Led Strip Commands");
         if (isShowTerminal) {
-            MenuItem mi1 = menu.add(0, 0, 0, "Item 1");
+            MenuItem mi1 = menu.add(0, 0, 1, "Item 1");
             mi1.setIcon(R.drawable.ic_computer_white_24dp);
             mi1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
@@ -292,8 +295,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             infoDialog.show(getSupportFragmentManager(), "info0");
         }
         if (id == 2) {
-            Intent backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
-            startService(backgroudClockService);
+            Log.i("OptionsMenu", "CheckBox");
         }
         if (id == 1) {
             isTransition = true;
