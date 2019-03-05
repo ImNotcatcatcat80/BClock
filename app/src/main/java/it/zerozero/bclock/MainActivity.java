@@ -11,6 +11,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String[] mTimeZoneIDs = new String[1000];
     private Handler mHandler;
     private Thread thrOscillator;
+    private boolean flashOn = false;
     private boolean isShowTerminal;
     private boolean isCreateNotif;
     private boolean isTransition;
@@ -243,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mi1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         MenuItem mi2 = menu.add(0, 2, 2, "Item2");
-        mi2.setIcon(R.drawable.ic_check_box_white_24dp);
+        mi2.setIcon(R.drawable.ic_light_bulb);
         mi2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
@@ -295,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             infoDialog.show(getSupportFragmentManager(), "info0");
         }
         if (id == 2) {
-            Log.i("OptionsMenu", "CheckBox");
+            toggleFlashSDK23();
         }
         if (id == 1) {
             isTransition = true;
@@ -376,6 +379,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void toggleFlashSDK23() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            String cameraId = null; // Usually back camera is at 0 position.
+            try {
+                cameraId = cameraManager.getCameraIdList()[0];
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                if (!flashOn) {
+                    cameraManager.setTorchMode(cameraId, true); //Turn ON
+                    flashOn = true;
+                }
+                else {
+                    cameraManager.setTorchMode(cameraId, false); //Turn OFF
+                    flashOn = false;
+                }
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 
