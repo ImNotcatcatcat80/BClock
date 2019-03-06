@@ -85,13 +85,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == Oscillator.ON){
-                    Log.i("Oscillator", "ON");
-                    // mTextViewBlink.setVisibility(View.VISIBLE);
                     mTextViewBlink.setTextColor(Color.parseColor("#ffffff"));
                 }
                 else if (msg.what == Oscillator.OFF) {
-                    Log.i("Oscillator", "off");
-                    // mTextViewBlink.setVisibility(View.GONE);
                     mTextViewBlink.setTextColor(Color.parseColor("#000000"));
                 }
             }
