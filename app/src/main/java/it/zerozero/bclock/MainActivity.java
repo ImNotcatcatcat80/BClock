@@ -59,8 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String[] mTimeZoneIDs = new String[1000];
     private Handler mHandler;
     private Thread thrOscillator;
+    private Intent backgroudClockService;
     private boolean flashOn = false;
     private boolean isShowTerminal;
+    private boolean isControlFlashlight;
     private boolean isCreateNotif;
     private boolean isTransition;
     private boolean speechOverride = false;
@@ -163,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
+        startService(backgroudClockService);
     }
 
     @Override
@@ -174,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSmallTextRet = mShPref.getString("smallText", "default return");
         mTimeZoneStr = mShPref.getString("TimeZoneStr", "default TZStr");
         isShowTerminal = mShPref.getBoolean("ShowTerminal", false);
+        isControlFlashlight = mShPref.getBoolean("ControlFlashlight", false);
         isCreateNotif = mShPref.getBoolean("CreateNotif", true);
         Toast.makeText(MainActivity.this, mTimeZoneStr, Toast.LENGTH_SHORT).show();
         mTextClock.setTimeZone(mTimeZoneStr);
@@ -219,16 +224,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             notificationManager.notify(10234, notBuilder.build());  // "10234" è un id arbitrario per aggiornare poi la notifica
         }
 
+        /**
         Intent backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
         startService(backgroudClockService);
+         */
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (notificationManager != null) {
-            notificationManager.cancel(10234);
-        }
+
     }
 
     @Override
@@ -241,9 +246,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mi1.setIcon(R.drawable.ic_computer_white_24dp);
             mi1.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
-        MenuItem mi2 = menu.add(0, 2, 2, "Item2");
-        mi2.setIcon(R.drawable.ic_light_bulb);
-        mi2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        if (isControlFlashlight) {
+            MenuItem mi2 = menu.add(0, 2, 2, "Item2");
+            mi2.setIcon(R.drawable.ic_light_bulb);
+            mi2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
         return true;
     }
 

@@ -19,6 +19,7 @@ public class OptionsActivity extends AppCompatActivity {
     private String mOldTZ = "old_tz";
     private String mTimeZoneStr = "Select Time Zone";
     private boolean mShowTerminal;
+    private boolean mControlFlashlight;
     private boolean mCreateNotification;
     private RadioGroup mRadioGroupTZ;
     private RadioButton mRadioButton1;
@@ -29,6 +30,7 @@ public class OptionsActivity extends AppCompatActivity {
     private SharedPreferences.Editor mPrefEditor;
     private EditText editText;
     private Switch showTerminalSwitch;
+    private Switch flashlightControlSwitch;
     private CheckBox checkBoxNotification;
 
     @Override
@@ -55,6 +57,13 @@ public class OptionsActivity extends AppCompatActivity {
                     showTerminalSwitch.setText("Hiding terminal");
                     mShowTerminal = false;
                 }
+            }
+        });
+        flashlightControlSwitch = (Switch) findViewById(R.id.switch2);
+        flashlightControlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mControlFlashlight = isChecked;
             }
         });
         checkBoxNotification = (CheckBox) findViewById(R.id.checkBoxNotification);
@@ -135,6 +144,8 @@ public class OptionsActivity extends AppCompatActivity {
         else {
             showTerminalSwitch.setText("Hiding terminal");
         }
+        mControlFlashlight = mShPref.getBoolean("ControlFlashlight", false);
+        flashlightControlSwitch.setChecked(mControlFlashlight);
         checkBoxNotification.setChecked(mShPref.getBoolean("CreateNotif", true));
     }
 
@@ -148,6 +159,7 @@ public class OptionsActivity extends AppCompatActivity {
         mPrefEditor.putString("TimeZoneStr", mTimeZoneStr);
         mPrefEditor.putBoolean("ShowTerminal", mShowTerminal);
         mPrefEditor.putBoolean("CreateNotif", mCreateNotification);
+        mPrefEditor.putBoolean("ControlFlashlight", mControlFlashlight);
         mPrefEditor.commit();
         Log.i("mShPref", ".commit()");
     }

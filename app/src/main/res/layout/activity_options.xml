@@ -100,6 +100,12 @@
                 android:checked="false"
                 android:text=" ... "
                 android:textAlignment="gravity" />
+
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flashlight control" />
         </LinearLayout>
 
         <LinearLayout
