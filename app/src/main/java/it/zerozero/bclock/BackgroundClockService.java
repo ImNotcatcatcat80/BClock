@@ -3,6 +3,7 @@ package it.zerozero.bclock;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
     private NotificationManager notificationManager;
     private static final String BELCLOCK_SERVICE_NOTIF_CHANN = "BelClock_3300_notifChannel";
     private static long bgCtr;
+    private boolean isControlFlashlight = false;
     private boolean previousOverThrPositive = true;
     private long previousOverThrMs = 0;
     private int numOverThr = 0;
@@ -77,22 +79,19 @@ public class BackgroundClockService extends Service implements SensorEventListen
     public Notification createNotification() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.notif_channel_name);
-            String description = getString(R.string.notif_channel_description);
+            CharSequence name = getString(R.string.notif_channel_service_name);
+            String description = getString(R.string.notif_channel_service_description);
             int importance = NotificationManager.IMPORTANCE_MIN;
             NotificationChannel channel = new NotificationChannel(BELCLOCK_SERVICE_NOTIF_CHANN, name, importance);
             channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
 
         NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_SERVICE_NOTIF_CHANN)
                 .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
-                .setSound(null)
                 .setContentTitle("BelClock - foreground service")
-                .setContentText("Started")
+                .setContentText("...")
                 .setAutoCancel(true)
                 .setLights(0x80ffffff, 500, 2500);
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -104,8 +103,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (Math.abs(event.values[0]) > 9.1) {
-            mShPref = getSharedPreferences("BelClock", MODE_PRIVATE);
-            if ((event.values[0] > 0) != previousOverThrPositive && mShPref.getBoolean("ControlFlashlight", false)) {
+            if (((event.values[0] > 0) != previousOverThrPositive) && isControlFlashlight) {
                 boolean isOverThrFast = (System.currentTimeMillis() - previousOverThrMs < 1250);
                 previousOverThrMs = System.currentTimeMillis();
                 if(isOverThrFast) {
@@ -117,7 +115,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
                     numOverThr = 0;
                 }
 
-                if(numOverThr > 2) {
+                if(numOverThr > 5) {
                     Log.i("BgSvcRunnable ", "********************");
                     if (System.currentTimeMillis() - previousToggleMs >= 1500) {
                         toggleFlashSDK23();
@@ -173,6 +171,8 @@ public class BackgroundClockService extends Service implements SensorEventListen
                     .setLights(0x80ffffff, 500, 2500);
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(10236, notBuilder.build());
+            mShPref = getSharedPreferences("BelClock", MODE_PRIVATE);
+            isControlFlashlight = mShPref.getBoolean("ControlFlashlight", false);
             bgSvcHandler.postDelayed(this, 10000);
         }
     }

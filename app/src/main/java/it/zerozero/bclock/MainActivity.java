@@ -215,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (isCreateNotif &! isTransition) {
             NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_NOTIF_CHANN)
                     .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
-                    .setSound(null)
                     .setContentTitle("BelClock - onPause()")
                     .setContentText("At: " + Calendar.getInstance().getTime().toString())
                     .setContentIntent(pendingIntent)
