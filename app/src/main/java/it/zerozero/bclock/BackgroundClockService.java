@@ -1,5 +1,8 @@
 package it.zerozero.bclock;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +16,11 @@ import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class BackgroundClockService extends Service implements SensorEventListener {
 
@@ -22,6 +29,8 @@ public class BackgroundClockService extends Service implements SensorEventListen
     private SensorManager sensorManager;
     private Sensor accel;
     private SharedPreferences mShPref;
+    private NotificationManager notificationManager;
+    private static final String BELCLOCK_SERVICE_NOTIF_CHANN = "BelClock_3300_notifChannel";
     private static long bgCtr;
     private boolean previousOverThrPositive = true;
     private long previousOverThrMs = 0;
@@ -47,6 +56,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        startForeground(10236, createNotification());
         return Service.START_STICKY;
     }
 
@@ -60,7 +70,35 @@ public class BackgroundClockService extends Service implements SensorEventListen
     public void onDestroy() {
         super.onDestroy();
         Log.e("BgSvcRunnable", "service destroyed.");
+        notificationManager.cancel(10236);
         bgSvcHandler.removeCallbacks(bgSvcRunnable);
+    }
+
+    public Notification createNotification() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notif_channel_name);
+            String description = getString(R.string.notif_channel_description);
+            int importance = NotificationManager.IMPORTANCE_MIN;
+            NotificationChannel channel = new NotificationChannel(BELCLOCK_SERVICE_NOTIF_CHANN, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_SERVICE_NOTIF_CHANN)
+                .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
+                .setSound(null)
+                .setContentTitle("BelClock - foreground service")
+                .setContentText("Started")
+                .setAutoCancel(true)
+                .setLights(0x80ffffff, 500, 2500);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(10236, notBuilder.build());  // "10236" è un id arbitrario per aggiornare poi la notifica
+
+        return notBuilder.build();
     }
 
     @Override
@@ -79,7 +117,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
                     numOverThr = 0;
                 }
 
-                if(numOverThr > 1) {
+                if(numOverThr > 2) {
                     Log.i("BgSvcRunnable ", "********************");
                     if (System.currentTimeMillis() - previousToggleMs >= 1500) {
                         toggleFlashSDK23();
@@ -127,6 +165,14 @@ public class BackgroundClockService extends Service implements SensorEventListen
         public void run() {
             Log.i("BgSvcRunnable ctr ", String.valueOf(bgCtr * 10));
             bgCtr++;
+            NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(getApplicationContext(), BELCLOCK_SERVICE_NOTIF_CHANN)
+                    .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
+                    .setContentTitle("BelClock - foreground service")
+                    .setContentText(String.format(Locale.ITALIAN, "Started %d seconds ago.", bgCtr * 10))
+                    .setAutoCancel(true)
+                    .setLights(0x80ffffff, 500, 2500);
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(10236, notBuilder.build());
             bgSvcHandler.postDelayed(this, 10000);
         }
     }

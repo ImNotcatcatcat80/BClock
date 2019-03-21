@@ -166,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
-        startService(backgroudClockService);
+        // startService(backgroudClockService);
+        startForegroundService(backgroudClockService);
     }
 
     @Override
@@ -375,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.notif_channel_name);
             String description = getString(R.string.notif_channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_NONE;
             NotificationChannel channel = new NotificationChannel(BELCLOCK_NOTIF_CHANN, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
