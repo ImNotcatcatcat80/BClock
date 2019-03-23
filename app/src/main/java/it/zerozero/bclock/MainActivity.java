@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean speechOverride = false;
     private final int SPEECH_REQ_CODE = 3330;
     private static final String BELCLOCK_NOTIF_CHANN = "BelClock_3039_notifChannel";
+    public static final String BCLOCK_NOTIF_GROUP = "it.zerozero.bclock.notificationgroup0";
     private NotificationManager notificationManager;
 
     @Override
@@ -165,8 +166,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
-        // startService(backgroudClockService);
+        backgroudClockService = new Intent(getApplicationContext(), ForegroundClockService.class);
         startForegroundService(backgroudClockService);
     }
 
@@ -214,8 +214,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (isCreateNotif &! isTransition) {
             NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, BELCLOCK_NOTIF_CHANN)
+                    .setGroup(BCLOCK_NOTIF_GROUP)
                     .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
-                    .setContentTitle("BelClock - onPause()")
+                    .setContentTitle("BClock - onPause()")
                     .setContentText("At: " + Calendar.getInstance().getTime().toString())
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         /**
-        Intent backgroudClockService = new Intent(getApplicationContext(), BackgroundClockService.class);
+        Intent backgroudClockService = new Intent(getApplicationContext(), ForegroundClockService.class);
         startService(backgroudClockService);
          */
     }

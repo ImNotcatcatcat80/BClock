@@ -67,7 +67,7 @@
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name=".BackgroundClockService"
+            android:name=".ForegroundClockService"
             android:enabled="true"
             android:exported="true"/>
     </application>

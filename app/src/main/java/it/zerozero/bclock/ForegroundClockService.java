@@ -23,7 +23,7 @@ import android.util.Log;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class BackgroundClockService extends Service implements SensorEventListener {
+public class ForegroundClockService extends Service implements SensorEventListener {
 
     private Handler bgSvcHandler;
     private Runnable bgSvcRunnable;
@@ -34,13 +34,14 @@ public class BackgroundClockService extends Service implements SensorEventListen
     private static final String BELCLOCK_SERVICE_NOTIF_CHANN = "BelClock_3300_notifChannel";
     private static long bgCtr;
     private boolean isControlFlashlight = false;
+    private boolean isCreateNotification = false;
     private boolean previousOverThrPositive = true;
     private long previousOverThrMs = 0;
     private int numOverThr = 0;
     private long previousToggleMs = 0;
     private boolean flashOn = false;
 
-    public BackgroundClockService() {
+    public ForegroundClockService() {
 
     }
 
@@ -102,7 +103,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (Math.abs(event.values[0]) > 9.1) {
+        if (Math.abs(event.values[0]) > 14.7) {
             if (((event.values[0] > 0) != previousOverThrPositive) && isControlFlashlight) {
                 boolean isOverThrFast = (System.currentTimeMillis() - previousOverThrMs < 1250);
                 previousOverThrMs = System.currentTimeMillis();
@@ -115,7 +116,7 @@ public class BackgroundClockService extends Service implements SensorEventListen
                     numOverThr = 0;
                 }
 
-                if(numOverThr > 5) {
+                if(numOverThr > 7) {
                     Log.i("BgSvcRunnable ", "********************");
                     if (System.currentTimeMillis() - previousToggleMs >= 1500) {
                         toggleFlashSDK23();
@@ -161,18 +162,35 @@ public class BackgroundClockService extends Service implements SensorEventListen
 
         @Override
         public void run() {
-            Log.i("BgSvcRunnable ctr ", String.valueOf(bgCtr * 10));
-            bgCtr++;
+            mShPref = getSharedPreferences("BelClock", MODE_PRIVATE);
+            isControlFlashlight = mShPref.getBoolean("ControlFlashlight", false);
+            isCreateNotification = mShPref.getBoolean("CreateNotif", true);
+            StringBuilder notifText = new StringBuilder(10);
+            if(flashOn) {
+                notifText.append("Flashlight *ON*");
+                notifText.append("\n\n");
+            }
+            if(!isCreateNotification) {
+                notifText.append("At ");
+                notifText.append(Calendar.getInstance().getTime().toString());
+                notifText.append("\n");
+            }
+            notifText.append(String.format(Locale.ITALIAN, "10-seconds Runnable counter: %d", bgCtr));
             NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(getApplicationContext(), BELCLOCK_SERVICE_NOTIF_CHANN)
+                    .setGroup(MainActivity.BCLOCK_NOTIF_GROUP)
                     .setSmallIcon(R.drawable.ic_developer_mode_black_24px)
-                    .setContentTitle("BelClock - foreground service")
-                    .setContentText(String.format(Locale.ITALIAN, "Started %d seconds ago.", bgCtr * 10))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(notifText))
+                    .setContentTitle("BClock - foreground service")
+                    .setContentText(notifText)
                     .setAutoCancel(true)
                     .setLights(0x80ffffff, 500, 2500);
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(10236, notBuilder.build());
-            mShPref = getSharedPreferences("BelClock", MODE_PRIVATE);
-            isControlFlashlight = mShPref.getBoolean("ControlFlashlight", false);
+
+            if(!isControlFlashlight) {
+                stopSelf();
+            }
+            bgCtr++;
             bgSvcHandler.postDelayed(this, 10000);
         }
     }
