@@ -103,7 +103,7 @@ public class ForegroundClockService extends Service implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (Math.abs(event.values[0]) > 14.7) {
+        if (Math.abs(event.values[0]) > 19.62) {
             if (((event.values[0] > 0) != previousOverThrPositive) && isControlFlashlight) {
                 boolean isOverThrFast = (System.currentTimeMillis() - previousOverThrMs < 1250);
                 previousOverThrMs = System.currentTimeMillis();

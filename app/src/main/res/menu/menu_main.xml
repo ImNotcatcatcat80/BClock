@@ -23,6 +23,11 @@
         android:title="@string/action_web_browser"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_openGL"
+        android:orderInCategory="100"
+        android:title="OpenGL test"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_info"
         android:orderInCategory="100"
         android:title="Info"

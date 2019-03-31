@@ -297,6 +297,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 e.printStackTrace();
             }
         }
+        if (id == R.id.action_openGL) {
+            isTransition = true;
+            Intent openGLIntent = new Intent(this, BCopenGLActivity.class);
+            startActivity(openGLIntent);
+            return true;
+        }
         if (id == R.id.action_info) {
             InfoDialog infoDialog = new InfoDialog();
             infoDialog.show(getSupportFragmentManager(), "info0");
