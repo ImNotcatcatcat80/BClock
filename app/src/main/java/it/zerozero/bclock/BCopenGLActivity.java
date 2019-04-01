@@ -17,4 +17,20 @@ public class BCopenGLActivity extends AppCompatActivity {
         glView = new BcGlSurfaceView(this);
         setContentView(glView);
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        glView.onResume();
+    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        glView.onPause();
+    }
 }
