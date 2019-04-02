@@ -203,13 +203,6 @@ public class BcGlSurfaceView extends GLSurfaceView {
             square.draw(scratch);
         }
 
-        public void onDrawFrame(float[] coords) {
-            // Redraw background color
-            Log.i("renderer", "onDrawFrame(coords)");
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-            square.draw(coords);
-        }
-
         public int loadShader(int type, String shaderCode){
 
             // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
