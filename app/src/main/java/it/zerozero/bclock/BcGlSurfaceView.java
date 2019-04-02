@@ -3,6 +3,7 @@ package it.zerozero.bclock;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -35,7 +36,7 @@ public class BcGlSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(2);
         renderer = new BcGlRenderer();
         setRenderer(renderer);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
     /**
@@ -51,7 +52,6 @@ public class BcGlSurfaceView extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-
         float x = event.getX();
         float y = event.getY();
 
@@ -63,25 +63,38 @@ public class BcGlSurfaceView extends GLSurfaceView {
                 float dx = x - prevTouchX;
                 float dy = y - prevTouchY;
 
-                float[] touchCoords = {
-                                x-530-60f,  y-830+60, 0.0f,   // top left
-                                x-530-60, y-830-60, 0.0f,   // bottom left
-                                x+530+60, y-830-60, 0.0f,   // bottom right
-                                x+530+60,  y+830+60, 0.0f   // top right
-                                };
-                renderer.onDrawFrame(touchCoords);
+                // reverse direction of rotation above the mid-line
+                if (y > getHeight() / 2) {
+                    dx = dx * -1 ;
+                }
+
+                // reverse direction of rotation to left of the mid-line
+                if (x < getWidth() / 2) {
+                    dy = dy * -1 ;
+                }
+
+                renderer.setAngle(
+                        renderer.getAngle() +
+                                ((dx + dy) * TOUCH_SCALE_FACTOR));
                 requestRender();
         }
 
         prevTouchX = x;
         prevTouchY = y;
-        //return super.onTouchEvent(event);
         return true;
 
     }
 
     private class BcGlRenderer implements GLSurfaceView.Renderer{
         private Square square;
+        public volatile float mAngle;
+        private float[] rotationMatrix = new float[16];
+
+        // vPMatrix is an abbreviation for "Model View Projection Matrix"
+        private final float[] vPMatrix = new float[16];
+        private final float[] projectionMatrix = new float[16];
+        private final float[] viewMatrix = new float[16];
+
         /**
          * Called when the surface is created or recreated.
          * <p>
@@ -141,6 +154,13 @@ public class BcGlSurfaceView extends GLSurfaceView {
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height) {
             GLES20.glViewport(0, 0, width, height);
+
+            float ratio = (float) width / height;
+
+            // this projection matrix is applied to object coordinates
+            // in the onDrawFrame() method
+            Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+
         }
 
         /**
@@ -161,9 +181,26 @@ public class BcGlSurfaceView extends GLSurfaceView {
          */
         @Override
         public void onDrawFrame(GL10 gl) {
+            float[] scratch = new float[16];
+
             // Redraw background color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-            square.draw();
+            // Set the camera position (View matrix)
+            Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+            // Calculate the projection and view transformation
+            Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+            // Create a rotation for the triangle
+            Matrix.setRotateM(rotationMatrix, 0, mAngle, 0, 0, -1.0f);
+
+            // Combine the rotation matrix with the projection and camera view
+            // Note that the vPMatrix factor *must be first* in order
+            // for the matrix multiplication product to be correct.
+            Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
+
+            // Draw shape
+            square.draw(scratch);
         }
 
         public void onDrawFrame(float[] coords) {
@@ -185,6 +222,15 @@ public class BcGlSurfaceView extends GLSurfaceView {
 
             return shader;
         }
+
+        public float getAngle() {
+            return mAngle;
+        }
+
+        public void setAngle(float angle) {
+            mAngle = angle;
+        }
+
     }
 
     public class Square {
@@ -211,6 +257,28 @@ public class BcGlSurfaceView extends GLSurfaceView {
 
         private final int vertexCount = squareCoords.length / COORDS_PER_VERTEX;
         private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+
+        private final String vertexShaderCode =
+                // This matrix member variable provides a hook to manipulate
+                // the coordinates of the objects that use this vertex shader
+                "uniform mat4 uMVPMatrix;" +
+                        "attribute vec4 vPosition;" +
+                        "void main() {" +
+                        // the matrix must be included as a modifier of gl_Position
+                        // Note that the uMVPMatrix factor *must be first* in order
+                        // for the matrix multiplication product to be correct.
+                        "  gl_Position = uMVPMatrix * vPosition;" +
+                        "}";
+
+        private final String fragmentShaderCode =
+                "precision mediump float;" +
+                        "uniform vec4 vColor;" +
+                        "void main() {" +
+                        "  gl_FragColor = vColor;" +
+                        "}";
+
+        // Use to access and set the view transformation
+        private int vPMatrixHandle;
 
 
         public Square() {
@@ -286,6 +354,59 @@ public class BcGlSurfaceView extends GLSurfaceView {
             GLES20.glDisableVertexAttribArray(positionHandle);
         }
 
+        public void draw(float[] mvpMatrix) {
+            // Add program to OpenGL ES environment
+            GLES20.glUseProgram(oGlProgram);
+
+            // get handle to vertex shader's vPosition member
+            positionHandle = GLES20.glGetAttribLocation(oGlProgram, "vPosition");
+
+            // Enable a handle to the triangle vertices
+            GLES20.glEnableVertexAttribArray(positionHandle);
+
+            // Prepare the triangle coordinate data
+            GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
+                    GLES20.GL_FLOAT, false,
+                    vertexStride, vertexBuffer);
+
+            // get handle to fragment shader's vColor member
+            colorHandle = GLES20.glGetUniformLocation(oGlProgram, "vColor");
+
+            // Set color for drawing the triangle/square
+            GLES20.glUniform4fv(colorHandle, 1, color, 0);
+
+            // Draw the triangle
+            // GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+
+            // Draw the square
+            // GLES20.glDrawElements(
+                    // GLES20.GL_TRIANGLES, drawOrder.length,
+                    // GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+
+            /** Disable vertex array
+            GLES20.glDisableVertexAttribArray(positionHandle);
+            */
+
+            // get handle to shape's transformation matrix
+            vPMatrixHandle = GLES20.glGetUniformLocation(oGlProgram, "uMVPMatrix");
+
+            // Pass the projection and view transformation to the shader
+            GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
+
+            // Draw the triangle
+            // GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+
+            // Draw the square
+            GLES20.glDrawElements(
+                    GLES20.GL_TRIANGLES, drawOrder.length,
+                    GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+
+            // Disable vertex array
+            GLES20.glDisableVertexAttribArray(positionHandle);
+
+        }
+
+        /*
         public void draw(float[] newCoords) {
             squareCoords = newCoords;
 
@@ -320,19 +441,15 @@ public class BcGlSurfaceView extends GLSurfaceView {
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(positionHandle);
         }
+        */
 
+        /*
         private final String vertexShaderCode =
                 "attribute vec4 vPosition;" +
                         "void main() {" +
                         "  gl_Position = vPosition;" +
                         "}";
-
-        private final String fragmentShaderCode =
-                "precision mediump float;" +
-                        "uniform vec4 vColor;" +
-                        "void main() {" +
-                        "  gl_FragColor = vColor;" +
-                        "}";
+        */
 
     }
 }
