@@ -303,6 +303,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             startActivity(openGLIntent);
             return true;
         }
+        if (id == R.id.action_drawing2D) {
+            isTransition = true;
+            Intent Drawing2DIntent = new Intent(this, Drawing2DActivity.class);
+            startActivity(Drawing2DIntent);
+            return true;
+        }
         if (id == R.id.action_info) {
             InfoDialog infoDialog = new InfoDialog();
             infoDialog.show(getSupportFragmentManager(), "info0");

@@ -18,4 +18,5 @@
         <item>Nano</item>
         <item>Biiiiip!</item>
     </string-array>
+    <string name="title_activity_drawing2_d">Drawing2DActivity</string>
 </resources>
