@@ -8,7 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-public class Drawing2DActivity extends AppCompatActivity {
+import java.util.Locale;
+
+public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dview.DrawingViewTouchListener {
 
     private TextView textViewTop;
     private Drawing2Dview drawing2Dview;
@@ -29,4 +31,8 @@ public class Drawing2DActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onTouchDown(float touch_x, float touch_y) {
+        textViewTop.setText(String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", touch_x, touch_y));
+    }
 }
