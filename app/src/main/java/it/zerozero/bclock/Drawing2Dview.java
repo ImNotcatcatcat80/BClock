@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -46,7 +47,8 @@ public class Drawing2Dview extends View {
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setTextSize(40f);
+        mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        mTextPaint.setTextSize(60f);
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRectPaint.setColor(Color.rgb(24, 64, 220));
         mRectPaint.setStrokeWidth(10);
@@ -58,7 +60,7 @@ public class Drawing2Dview extends View {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Drawing2Dview","click.");
+                // Log.i("Drawing2Dview","click.");
             }
         });
         setOnTouchListener(new OnTouchListener() {
@@ -66,15 +68,18 @@ public class Drawing2Dview extends View {
             public boolean onTouch(View v, MotionEvent event) {
                 float x = event.getX();
                 float y = event.getY();
-                Log.d("Touch X Y", String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", x, y));
+                // Log.d("Touch X Y", String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", x, y));
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         mTouchX = x;
                         mTouchY = y;
-                        mListener.onTouchDown(x, y);
                     case MotionEvent.ACTION_UP:
                         mOldTouchX = x;
                         mOldTouchY = y;
+                    case MotionEvent.ACTION_MOVE:
+                        mTouchX = x;
+                        mTouchY = y;
+                        mListener.onTouchDown(x, y);
                 }
                 invalidate();
                 return Drawing2Dview.super.onTouchEvent(event);
@@ -85,7 +90,23 @@ public class Drawing2Dview extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRect(mTouchX-50, mTouchY-50, mTouchX+50, mTouchY+50, mRectPaint);
+
+        // Draw a vertical gradient
+        int vertRects = (int) getHeight() / 100;
+        int blueStep = (int) (220 / vertRects) - 1;
+        int widthTot = getWidth();
+        mRectPaint.setColor(Color.rgb(24, 64, 220));
+        for (int r = 0; r < vertRects; r++) {
+            canvas.drawRect(0, r * 100, widthTot, r * 100 + 100, mRectPaint);
+            mRectPaint.setColor(Color.rgb(18, 64, 220 - blueStep * r));
+        }
+
+        // Draw a white rectangle where touched
+        mRectPaint.setColor(Color.WHITE);
+        canvas.drawRect(mTouchX - 50, mTouchY - 50, mTouchX + 50, mTouchY + 50, mRectPaint);
+
+        // Number of the vRect touched
+        canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 25, mTextPaint);
     }
 
     @Override
