@@ -7,11 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import java.util.Locale;
 
 public class Drawing2Dview extends View {
 
@@ -80,10 +77,11 @@ public class Drawing2Dview extends View {
                     case MotionEvent.ACTION_UP:
                         mOldTouchX = x;
                         mOldTouchY = y;
+                        mListener.onTouchUp(x, y);
                     case MotionEvent.ACTION_MOVE:
                         mTouchX = x;
                         mTouchY = y;
-                        mListener.onTouchDown(x, y);
+                        mListener.onTouchMove(x, y);
                 }
                 invalidate();
                 return Drawing2Dview.super.onTouchEvent(event);
@@ -144,10 +142,12 @@ public class Drawing2Dview extends View {
 
     public void setCircleEnabled(boolean circleEnabled) {
         this.circleEnabled = circleEnabled;
+        invalidate();
     }
 
     public interface DrawingViewTouchListener {
-        void onTouchDown(float touch_x, float touch_y);
+        void onTouchMove(float touch_x, float touch_y);
+        void onTouchUp(float touch_x, float touch_y);
     }
 
 }
