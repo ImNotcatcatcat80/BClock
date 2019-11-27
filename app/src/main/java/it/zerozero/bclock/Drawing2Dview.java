@@ -15,10 +15,9 @@ import java.util.Locale;
 
 public class Drawing2Dview extends View {
 
-    private float mWidth;
-    private float mHeight;
+    private boolean circleEnabled = true;
     private boolean initialized = false;
-    private Paint mTextPaint, mRectPaint, mLinePaint;
+    private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
     private float mTouchX, mTouchY, mOldTouchX, mOldTouchY;
     private DrawingViewTouchListener mListener;
 
@@ -48,11 +47,15 @@ public class Drawing2Dview extends View {
         mTextPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
-        mTextPaint.setTextSize(60f);
+        mTextPaint.setTextSize(50f);
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRectPaint.setColor(Color.rgb(24, 64, 220));
         mRectPaint.setStrokeWidth(10);
         mRectPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCirclePaint.setColor(Color.WHITE);
+        mCirclePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mCirclePaint.setAlpha(192);
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaint.setColor(Color.WHITE);
         mLinePaint.setStyle(Paint.Style.STROKE);
@@ -66,6 +69,7 @@ public class Drawing2Dview extends View {
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                circleEnabled = true;
                 float x = event.getX();
                 float y = event.getY();
                 // Log.d("Touch X Y", String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", x, y));
@@ -101,12 +105,11 @@ public class Drawing2Dview extends View {
             mRectPaint.setColor(Color.rgb(18, 64, 220 - blueStep * r));
         }
 
-        // Draw a white rectangle where touched
-        mRectPaint.setColor(Color.WHITE);
-        canvas.drawRect(mTouchX - 50, mTouchY - 50, mTouchX + 50, mTouchY + 50, mRectPaint);
+        if (circleEnabled) {
+            canvas.drawCircle(mTouchX, mTouchY, 50, mCirclePaint);
+            canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 20, mTextPaint);
+        }
 
-        // Number of the vRect touched
-        canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 25, mTextPaint);
     }
 
     @Override
@@ -137,6 +140,10 @@ public class Drawing2Dview extends View {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mListener = null;
+    }
+
+    public void setCircleEnabled(boolean circleEnabled) {
+        this.circleEnabled = circleEnabled;
     }
 
     public interface DrawingViewTouchListener {

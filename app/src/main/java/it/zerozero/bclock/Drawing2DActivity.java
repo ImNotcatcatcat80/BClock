@@ -1,5 +1,6 @@
 package it.zerozero.bclock;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,13 +27,25 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
 
         textViewTop = findViewById(R.id.textViewTop);
         textViewTop.setText("ano");
-
         drawing2Dview = findViewById(R.id.drawind2Dview);
-
     }
 
     @Override
     public void onTouchDown(float touch_x, float touch_y) {
         textViewTop.setText(String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", touch_x, touch_y));
     }
+
+    static class ResetCircle extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+        }
+    }
+
 }
