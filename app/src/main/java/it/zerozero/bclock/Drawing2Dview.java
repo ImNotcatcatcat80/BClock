@@ -60,7 +60,7 @@ public class Drawing2Dview extends View {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Log.i("Drawing2Dview","click.");
+
             }
         });
         setOnTouchListener(new OnTouchListener() {
@@ -69,7 +69,6 @@ public class Drawing2Dview extends View {
                 circleEnabled = true;
                 float x = event.getX();
                 float y = event.getY();
-                // Log.d("Touch X Y", String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", x, y));
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         mTouchX = x;

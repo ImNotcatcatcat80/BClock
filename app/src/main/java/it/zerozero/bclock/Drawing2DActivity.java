@@ -14,8 +14,8 @@ import java.util.Locale;
 
 public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dview.DrawingViewTouchListener {
 
-    private TextView textViewTop;
-    protected Drawing2Dview drawing2Dview;
+    private static TextView textViewTop;
+    protected static Drawing2Dview drawing2Dview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +27,14 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         textViewTop = findViewById(R.id.textViewTop);
-        textViewTop.setText("ano");
+        textViewTop.setText(". . . .");
         drawing2Dview = findViewById(R.id.drawind2Dview);
+        drawing2Dview.setCircleEnabled(false);
     }
 
     @Override
     public void onTouchMove(float touch_x, float touch_y) {
-        textViewTop.setText(String.format(Locale.ITALIAN, "X=%.2f  Y=%.2f", touch_x, touch_y));
+        textViewTop.setText(String.format(Locale.ITALIAN, "X=%.1f   Y=%.1f", touch_x, touch_y));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         resetCircle.execute();
     }
 
-    private class ResetCircle extends AsyncTask {
+    private static class ResetCircle extends AsyncTask {
 
         @Override
         protected Object doInBackground(Object[] objects) {
@@ -59,6 +60,7 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             drawing2Dview.setCircleEnabled(false);
+            textViewTop.setText(". . . .");
         }
     }
 
