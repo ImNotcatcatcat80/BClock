@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -46,7 +48,6 @@ public class Drawing2Dview extends View {
         mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
         mTextPaint.setTextSize(50f);
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mRectPaint.setColor(Color.rgb(24, 64, 220));
         mRectPaint.setStrokeWidth(10);
         mRectPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -56,7 +57,7 @@ public class Drawing2Dview extends View {
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaint.setColor(Color.WHITE);
         mLinePaint.setStyle(Paint.Style.STROKE);
-        mLinePaint.setStrokeWidth(10);
+        mLinePaint.setStrokeWidth(1);
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,13 +97,27 @@ public class Drawing2Dview extends View {
         int vertRects = (int) getHeight() / 100;
         int blueStep = (int) (220 / vertRects) - 1;
         int widthTot = getWidth();
-        mRectPaint.setColor(Color.rgb(24, 64, 220));
+        mRectPaint.setColor(Color.rgb(20, 80, 220));
         for (int r = 0; r < vertRects; r++) {
             canvas.drawRect(0, r * 100, widthTot, r * 100 + 100, mRectPaint);
-            mRectPaint.setColor(Color.rgb(18, 64, 220 - blueStep * r));
+            mRectPaint.setColor(Color.rgb(20, 80, 220 - blueStep * r));
+            canvas.drawLine(0, r * 100 + 100, widthTot, r * 100 + 100, mCirclePaint);
+        }
+        for (int rl = 0; rl < vertRects; rl++) {
+            canvas.drawLine(0, rl * 100 + 100, widthTot, rl * 100 + 100, mLinePaint);
         }
 
         if (circleEnabled) {
+            /**
+             * Just a test
+             * draw red and yellow beams above / below touch circle
+            RectF greyRectF = new RectF(mTouchX - 75, mTouchY - 75, mTouchX + 75, mTouchY + 75);
+            mRectPaint.setColor(Color.RED);
+            canvas.drawArc(greyRectF, 45, 90, true, mRectPaint);
+            mRectPaint.setColor(Color.YELLOW);
+            canvas.drawArc(greyRectF, 225, 90, true, mRectPaint);
+             */
+
             canvas.drawCircle(mTouchX, mTouchY, 50, mCirclePaint);
             canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 20, mTextPaint);
         }
