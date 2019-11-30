@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,6 +31,19 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         textViewTop.setText(". . . .");
         drawing2Dview = findViewById(R.id.drawind2Dview);
         drawing2Dview.setCircleEnabled(false);
+        /**
+        drawing2Dview.setOnTouchListener(new Drawing2Dview.DrawingViewTouchListener() {
+            @Override
+            public void onTouchMove(float touch_x, float touch_y) {
+                Log.d("Activity onTouchMove:", String.format(Locale.ITALIAN, "X=%.1f   Y=%.1f", drawing2Dview.getmTouchX(), drawing2Dview.getmTouchY()));
+            }
+
+            @Override
+            public void onTouchUp(float touch_x, float touch_y) {
+
+            }
+        });
+        */
     }
 
     @Override

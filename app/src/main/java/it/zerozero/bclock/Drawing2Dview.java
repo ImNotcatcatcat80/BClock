@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -17,7 +15,7 @@ public class Drawing2Dview extends View {
     private boolean circleEnabled = true;
     private boolean initialized = false;
     private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
-    private float mTouchX, mTouchY, mOldTouchX, mOldTouchY;
+    private float mTouchX, mTouchY, mFirstTouchX, mFirstTouchY;
     private DrawingViewTouchListener mListener;
 
     public Drawing2Dview(Context context) {
@@ -72,8 +70,9 @@ public class Drawing2Dview extends View {
                 float y = event.getY();
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mOldTouchX = mTouchX = x;
-                        mOldTouchY = mTouchY = y;
+                        mFirstTouchX = mTouchX = x;
+                        mFirstTouchY = mTouchY = y;
+                        Drawing2Dview.super.performClick();
                     case MotionEvent.ACTION_UP:
                         mListener.onTouchUp(x, y);
                     case MotionEvent.ACTION_MOVE:
@@ -115,8 +114,8 @@ public class Drawing2Dview extends View {
             mRectPaint.setColor(Color.YELLOW);
             canvas.drawArc(greyRectF, 225, 90, true, mRectPaint);
              */
-            canvas.drawCircle(mOldTouchX, mOldTouchY, 10, mCirclePaint);
-            canvas.drawLine(mOldTouchX, mOldTouchY, mTouchX, mTouchY, mLinePaint);
+            canvas.drawCircle(mFirstTouchX, mFirstTouchY, 10, mCirclePaint);
+            canvas.drawLine(mFirstTouchX, mFirstTouchY, mTouchX, mTouchY, mLinePaint);
             canvas.drawCircle(mTouchX, mTouchY, 50, mCirclePaint);
             canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 20, mTextPaint);
         }
@@ -156,6 +155,27 @@ public class Drawing2Dview extends View {
     public void setCircleEnabled(boolean circleEnabled) {
         this.circleEnabled = circleEnabled;
         invalidate();
+    }
+
+    public float getmTouchX() {
+        return mTouchX;
+    }
+
+    public float getmTouchY() {
+        return mTouchY;
+    }
+
+    public float getmFirstTouchX() {
+        return mFirstTouchX;
+    }
+
+    public float getmFirstTouchY() {
+        return mFirstTouchY;
+    }
+
+    public void setOnTouchListener(DrawingViewTouchListener drawingViewTouchListener) {
+        // Not needed, as mListener is already set in onAttachedToWindow
+        mListener = (DrawingViewTouchListener) getContext();
     }
 
     public interface DrawingViewTouchListener {
