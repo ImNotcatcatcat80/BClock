@@ -3,6 +3,7 @@ package it.zerozero.bclock;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ public class Drawing2Dview extends View {
     private boolean circleEnabled = true;
     private boolean initialized = false;
     private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
+    private DashPathEffect dashedLineEffect;
     private float mTouchX, mTouchY, mFirstTouchX, mFirstTouchY;
     private DrawingViewTouchListener mListener;
 
@@ -56,6 +58,8 @@ public class Drawing2Dview extends View {
         mLinePaint.setColor(Color.WHITE);
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setStrokeWidth(1);
+        dashedLineEffect = new DashPathEffect(new float[]{2, 10}, 50);
+
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +104,7 @@ public class Drawing2Dview extends View {
             mRectPaint.setColor(Color.rgb(20, 80, 220 - blueStep * r));
             canvas.drawLine(0, r * 100 + 100, widthTot, r * 100 + 100, mCirclePaint);
         }
+        mLinePaint.setPathEffect(null);
         for (int rl = 0; rl < vertRects; rl++) {
             canvas.drawLine(0, rl * 100 + 100, widthTot, rl * 100 + 100, mLinePaint);
         }
@@ -113,8 +118,11 @@ public class Drawing2Dview extends View {
             canvas.drawArc(greyRectF, 45, 90, true, mRectPaint);
             mRectPaint.setColor(Color.YELLOW);
             canvas.drawArc(greyRectF, 225, 90, true, mRectPaint);
-             */
+            float[] points = {mTouchX - 100, mTouchY, mTouchX, mTouchY - 100, mTouchX, mTouchY - 100, mTouchX + 100, mTouchY};
+            canvas.drawLines(points, mLinePaint);
+            */
             canvas.drawCircle(mFirstTouchX, mFirstTouchY, 10, mCirclePaint);
+            mLinePaint.setPathEffect(dashedLineEffect);
             canvas.drawLine(mFirstTouchX, mFirstTouchY, mTouchX, mTouchY, mLinePaint);
             canvas.drawCircle(mTouchX, mTouchY, 50, mCirclePaint);
             canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 20, mTextPaint);
