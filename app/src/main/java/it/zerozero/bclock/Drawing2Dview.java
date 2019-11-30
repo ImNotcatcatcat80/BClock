@@ -72,11 +72,9 @@ public class Drawing2Dview extends View {
                 float y = event.getY();
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mTouchX = x;
-                        mTouchY = y;
+                        mOldTouchX = mTouchX = x;
+                        mOldTouchY = mTouchY = y;
                     case MotionEvent.ACTION_UP:
-                        mOldTouchX = x;
-                        mOldTouchY = y;
                         mListener.onTouchUp(x, y);
                     case MotionEvent.ACTION_MOVE:
                         mTouchX = x;
@@ -117,7 +115,8 @@ public class Drawing2Dview extends View {
             mRectPaint.setColor(Color.YELLOW);
             canvas.drawArc(greyRectF, 225, 90, true, mRectPaint);
              */
-
+            canvas.drawCircle(mOldTouchX, mOldTouchY, 10, mCirclePaint);
+            canvas.drawLine(mOldTouchX, mOldTouchY, mTouchX, mTouchY, mLinePaint);
             canvas.drawCircle(mTouchX, mTouchY, 50, mCirclePaint);
             canvas.drawText(String.valueOf((int)mTouchY / 100), mTouchX, mTouchY + 20, mTextPaint);
         }
