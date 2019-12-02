@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -34,6 +35,7 @@ public class LedStripActivity extends AppCompatActivity {
     private TextView textViewLabelLedStripDevice;
     private static TextView textViewLedStripStatus;
     private SeekBar seekBarLeds;
+    private LedStripView ledStripView;
     private Switch switchReverseLedStrip;
     private Switch switchBT;
     private Switch switchNSD;
@@ -66,7 +68,10 @@ public class LedStripActivity extends AppCompatActivity {
         textViewLabelLedStripDevice = findViewById(R.id.textViewLabelLedStripIP);
         textViewLedStripStatus = findViewById(R.id.textViewLedStripStatus);
         seekBarLeds = findViewById(R.id.seekBarLeds);
+        seekBarLeds.setVisibility(View.GONE);
+        ledStripView = findViewById(R.id.ledStripView);
         textViewLedNo = findViewById(R.id.textViewLedNo);
+        textViewLedNo.setVisibility(View.INVISIBLE);
         switchBT = findViewById(R.id.switchBT);
         switchBT.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -97,6 +102,7 @@ public class LedStripActivity extends AppCompatActivity {
             }
         });
         switchReverseLedStrip = findViewById(R.id.switchReverseLedStrip);
+        switchReverseLedStrip.setVisibility(View.INVISIBLE);
         switchReverseLedStrip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -136,10 +142,12 @@ public class LedStripActivity extends AppCompatActivity {
             @Override
             public void run() {
                 ledStripCommands = new LedStripCommands();
-                int r = numberPickerR.getValue();
-                int g = numberPickerG.getValue();
-                int b = numberPickerB.getValue();
-                int[] colorsAr = new int[ledStripCommands.LEDSTRIP_LENGTH];
+                int r = numberPickerR.getValue() * 8;
+                int g = numberPickerG.getValue() * 8;
+                int b = numberPickerB.getValue() * 8;
+                ledStripView.setmLedOnColor(r, g, b);
+                int[] colorsAr = ledStripView.getLedColorsAr(); // new int[ledStripCommands.LEDSTRIP_LENGTH];
+                /*
                 for (int q = 0; q < ledStripCommands.LEDSTRIP_LENGTH; q++) {
                     if ((q < seekBarLeds.getProgress() &! ledStripReversed) || (q >= seekBarLeds.getProgress() && ledStripReversed)) {
                         colorsAr[q] = Color.rgb(r, g, b);
@@ -148,6 +156,7 @@ public class LedStripActivity extends AppCompatActivity {
                         colorsAr[q] = Color.BLACK;
                     }
                 }
+                */
                 ledStripCommands.setLedColorsAr(colorsAr);
                 SendLedCommands sendLedCommands = new SendLedCommands();
                 sendLedCommands.setData(editTextLedStripIP.getText().toString(), 19881);

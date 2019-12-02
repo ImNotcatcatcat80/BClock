@@ -58,7 +58,7 @@ public class Drawing2Dview extends View {
         mLinePaint.setColor(Color.WHITE);
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setStrokeWidth(1);
-        dashedLineEffect = new DashPathEffect(new float[]{2, 10}, 50);
+        dashedLineEffect = new DashPathEffect(new float[]{2, 6}, 50);
 
         setOnClickListener(new OnClickListener() {
             @Override
@@ -138,12 +138,14 @@ public class Drawing2Dview extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mListener = (DrawingViewTouchListener) getContext();
+        // mListener = (DrawingViewTouchListener) getContext();
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+
+        mListener = (DrawingViewTouchListener) getContext();
 
         // Initialization, not necessary
         if (!initialized) {
@@ -158,6 +160,11 @@ public class Drawing2Dview extends View {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mListener = null;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 
     public void setCircleEnabled(boolean circleEnabled) {
