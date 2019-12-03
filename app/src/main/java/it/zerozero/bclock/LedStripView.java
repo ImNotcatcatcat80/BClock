@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import java.util.Arrays;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -79,7 +78,16 @@ public class LedStripView extends View {
         super.onDraw(canvas);
         // canvas.drawColor(Color.GRAY);    // this draws over the background, which we don't like here.
         for(int led = 0; led < 7; led++) {
-            mLedPaint.setColor(ledColorsAr[led]);
+            int tempColor = ledColorsAr[led];
+            // int tempA = (tempColor >> 24) & 0xff; // or color >>> 24
+            int tempR = (tempColor >> 16) & 0xff;
+            int tempG = (tempColor >>  8) & 0xff;
+            int tempB = (tempColor) & 0xff;
+            // offset the components to have a better representation on screen
+            int r = 100 + 5 * tempR;
+            int g = 100 + 5 * tempG;
+            int b = 100 + 5 * tempB;
+            mLedPaint.setColor(Color.rgb(r, g, b));
             canvas.drawCircle(mPadding + led * mLedStep, mHeight / 2, mLedRadius, mLedPaint);
             canvas.drawCircle(mPadding + led * mLedStep, mHeight / 2, mLedRadius, mLedBorderPaint);
         }

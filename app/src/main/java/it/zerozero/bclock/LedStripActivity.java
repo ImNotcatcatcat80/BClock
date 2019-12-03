@@ -102,7 +102,7 @@ public class LedStripActivity extends AppCompatActivity {
             }
         });
         switchReverseLedStrip = findViewById(R.id.switchReverseLedStrip);
-        switchReverseLedStrip.setVisibility(View.INVISIBLE);
+        switchReverseLedStrip.setVisibility(View.GONE);
         switchReverseLedStrip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -142,9 +142,9 @@ public class LedStripActivity extends AppCompatActivity {
             @Override
             public void run() {
                 ledStripCommands = new LedStripCommands();
-                int r = numberPickerR.getValue() * 8;
-                int g = numberPickerG.getValue() * 8;
-                int b = numberPickerB.getValue() * 8;
+                int r = numberPickerR.getValue();
+                int g = numberPickerG.getValue();
+                int b = numberPickerB.getValue();
                 ledStripView.setmLedOnColor(r, g, b);
                 int[] colorsAr = ledStripView.getLedColorsAr(); // new int[ledStripCommands.LEDSTRIP_LENGTH];
                 /*
