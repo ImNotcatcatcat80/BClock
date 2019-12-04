@@ -77,7 +77,7 @@ public class LedStripView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // canvas.drawColor(Color.GRAY);    // this draws over the background, which we don't like here.
-        for(int led = 0; led < 7; led++) {
+        for(int led = 0; led < LedStripCommands.LEDSTRIP_LENGTH; led++) {
             int tempColor = ledColorsAr[led];
             // int tempA = (tempColor >> 24) & 0xff; // or color >>> 24
             int tempR = (tempColor >> 16) & 0xff;
@@ -111,8 +111,8 @@ public class LedStripView extends View {
 
     public int[] getLedColorsAr() {
         // ledColorsAr is returned reversed
-        int[] outArray = new int[7];
-        for (int n = 0; n < 7; n++) {
+        int[] outArray = new int[LedStripCommands.LEDSTRIP_LENGTH];
+        for (int n = 0; n < LedStripCommands.LEDSTRIP_LENGTH; n++) {
             outArray[6 - n] = ledColorsAr[n];
         }
         return outArray;

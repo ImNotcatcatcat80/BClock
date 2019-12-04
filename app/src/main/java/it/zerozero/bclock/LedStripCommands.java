@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 public class LedStripCommands {
 
-    public final int LEDSTRIP_LENGTH = 7;
+    public static final int LEDSTRIP_LENGTH = 7;
     private int[] ledColorsAr = new int[LEDSTRIP_LENGTH];
 
     public LedStripCommands() {
