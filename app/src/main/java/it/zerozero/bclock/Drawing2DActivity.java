@@ -58,13 +58,10 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_drawing2d) {
+        if (id == R.id.action_trace) {
             Toast.makeText(this, "* * *", Toast.LENGTH_SHORT).show();
             return true;
         }

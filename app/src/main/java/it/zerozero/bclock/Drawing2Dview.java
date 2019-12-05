@@ -11,10 +11,14 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class Drawing2Dview extends View {
 
     private boolean circleEnabled = true;
+    private boolean traceMode = false;
     private boolean initialized = false;
+    private ArrayList<CircleTrace> circleTraceArrayList = new ArrayList<CircleTrace>();
     private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
     private DashPathEffect dashedLineEffect;
     private float mTouchX, mTouchY, mFirstTouchX, mFirstTouchY;
@@ -109,6 +113,10 @@ public class Drawing2Dview extends View {
             canvas.drawLine(0, rl * 100 + 100, widthTot, rl * 100 + 100, mLinePaint);
         }
 
+        if (traceMode) {
+
+        }
+
         if (circleEnabled) {
             /**
              * Just a test
@@ -188,6 +196,14 @@ public class Drawing2Dview extends View {
         return mFirstTouchY;
     }
 
+    public boolean isTraceMode() {
+        return traceMode;
+    }
+
+    public void setTraceMode(boolean traceMode) {
+        this.traceMode = traceMode;
+    }
+
     public void setOnTouchListener(DrawingViewTouchListener drawingViewTouchListener) {
         // Not needed, as mListener is already set in onAttachedToWindow
         mListener = (DrawingViewTouchListener) getContext();
@@ -196,6 +212,16 @@ public class Drawing2Dview extends View {
     public interface DrawingViewTouchListener {
         void onTouchMove(float touch_x, float touch_y);
         void onTouchUp(float touch_x, float touch_y);
+    }
+
+    private class CircleTrace {
+        int x;
+        int y;
+
+        public CircleTrace(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 
 }
