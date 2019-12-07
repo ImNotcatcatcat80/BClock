@@ -211,6 +211,7 @@ public class Drawing2Dview extends View {
         else {
             circleTraceArrayList = null;
         }
+        mTouchX = mTouchY = -100;
         invalidate();
     }
 

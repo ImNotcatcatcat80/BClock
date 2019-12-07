@@ -1,5 +1,7 @@
 package it.zerozero.bclock;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -79,7 +81,7 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
 
         return super.onOptionsItemSelected(item);
     }
-
+    
     @Override
     public void onTouchMove(float touch_x, float touch_y) {
         textViewTop.setText(String.format(Locale.ITALIAN, "X=%.1f   Y=%.1f", touch_x, touch_y));
@@ -92,6 +94,14 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         resetCircle.execute();
     }
 
+    // TODO: 07/12/2019 Implement sharing the canvas with other apps 
+    public Bitmap viewToBitmap(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+    
     private static class ResetCircle extends AsyncTask {
 
         @Override
