@@ -20,6 +20,8 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
 
     private static TextView textViewTop;
     protected static Drawing2Dview drawing2Dview;
+    private Menu optionsMenu;
+    private MenuItem traceModeMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,9 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_drawing2d, menu);
+        optionsMenu = menu;
+        traceModeMenuItem = optionsMenu.findItem(R.id.action_trace);
+        traceModeMenuItem.setTitle("Trace: off");
         return true;
     }
 
@@ -62,7 +67,13 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_trace) {
-            Toast.makeText(this, "* * *", Toast.LENGTH_SHORT).show();
+            drawing2Dview.setTraceMode(!drawing2Dview.isTraceMode());
+            if (drawing2Dview.isTraceMode()) {
+                traceModeMenuItem.setTitle("Trace: ON");
+            }
+            else {
+                traceModeMenuItem.setTitle("Trace: off");
+            }
             return true;
         }
 

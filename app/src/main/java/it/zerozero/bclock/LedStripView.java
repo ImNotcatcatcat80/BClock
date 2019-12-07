@@ -76,7 +76,8 @@ public class LedStripView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // canvas.drawColor(Color.GRAY);    // this draws over the background, which we don't like here.
+        canvas.drawColor(Color.TRANSPARENT);
+        // canvas.drawColor(Color.argb(0, 255, 255, 255));    // same; alpha == 0
         for(int led = 0; led < LedStripCommands.LEDSTRIP_LENGTH; led++) {
             int tempColor = ledColorsAr[led];
             // int tempA = (tempColor >> 24) & 0xff; // or color >>> 24

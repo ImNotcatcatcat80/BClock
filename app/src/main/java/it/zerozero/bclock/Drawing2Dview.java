@@ -98,10 +98,10 @@ public class Drawing2Dview extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Draw a vertical gradient
         int vertRects = (int) getHeight() / 100;
         int blueStep = (int) (220 / vertRects) - 1;
         int widthTot = getWidth();
+        // Draw a vertical gradient
         mRectPaint.setColor(Color.rgb(20, 80, 220));
         for (int r = 0; r < vertRects; r++) {
             canvas.drawRect(0, r * 100, widthTot, r * 100 + 100, mRectPaint);
@@ -114,10 +114,13 @@ public class Drawing2Dview extends View {
         }
 
         if (traceMode) {
-
+            circleTraceArrayList.add(new CircleTrace((int) mTouchX, (int) mTouchY));
+            for(CircleTrace ct : circleTraceArrayList) {
+                canvas.drawCircle(ct.getX(), ct.getY(), 20, mCirclePaint);
+            }
         }
 
-        if (circleEnabled) {
+        if (circleEnabled &! traceMode) {
             /**
              * Just a test
              * draw red and yellow beams above / below touch circle
@@ -202,6 +205,13 @@ public class Drawing2Dview extends View {
 
     public void setTraceMode(boolean traceMode) {
         this.traceMode = traceMode;
+        if (traceMode) {
+            circleTraceArrayList = new ArrayList<CircleTrace>();
+        }
+        else {
+            circleTraceArrayList = null;
+        }
+        invalidate();
     }
 
     public void setOnTouchListener(DrawingViewTouchListener drawingViewTouchListener) {
@@ -221,6 +231,14 @@ public class Drawing2Dview extends View {
         public CircleTrace(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
         }
     }
 
