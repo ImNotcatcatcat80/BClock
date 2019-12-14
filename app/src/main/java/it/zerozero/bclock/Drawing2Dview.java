@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,7 +23,6 @@ public class Drawing2Dview extends View {
     private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
     private DashPathEffect dashedLineEffect;
     private float mTouchX, mTouchY, mFirstTouchX, mFirstTouchY;
-    private DrawingViewTouchListener mListener;
 
     public Drawing2Dview(Context context) {
         super(context);
@@ -63,41 +63,13 @@ public class Drawing2Dview extends View {
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setStrokeWidth(1);
         dashedLineEffect = new DashPathEffect(new float[]{2, 6}, 50);
-
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Drawing2Dview.super.performClick();
-            }
-        });
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                circleEnabled = true;
-                float x = event.getX();
-                float y = event.getY();
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mFirstTouchX = mTouchX = x;
-                        mFirstTouchY = mTouchY = y;
-                        Drawing2Dview.super.performClick();
-                    case MotionEvent.ACTION_UP:
-                        mListener.onTouchUp(x, y);
-                    case MotionEvent.ACTION_MOVE:
-                        mTouchX = x;
-                        mTouchY = y;
-                        mListener.onTouchMove(x, y);
-                }
-                invalidate();
-                return Drawing2Dview.super.onTouchEvent(event);
-            }
-        });
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        Log.d("D2D", "View OD");
         int vertRects = (int) getHeight() / 100;
         int blueStep = (int) (220 / vertRects) - 1;
         int widthTot = getWidth();
@@ -114,7 +86,6 @@ public class Drawing2Dview extends View {
         }
 
         if (traceMode) {
-            circleTraceArrayList.add(new CircleTrace((int) mTouchX, (int) mTouchY));
             for(CircleTrace ct : circleTraceArrayList) {
                 canvas.drawCircle(ct.getX(), ct.getY(), 20, mCirclePaint);
             }
@@ -149,15 +120,11 @@ public class Drawing2Dview extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        // mListener = (DrawingViewTouchListener) getContext();
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-
-        mListener = (DrawingViewTouchListener) getContext();
-
         // Initialization, not necessary
         if (!initialized) {
             mTouchX = getWidth() / 2;
@@ -170,7 +137,7 @@ public class Drawing2Dview extends View {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mListener = null;
+
     }
 
     @Override
@@ -180,6 +147,29 @@ public class Drawing2Dview extends View {
 
     public void setCircleEnabled(boolean circleEnabled) {
         this.circleEnabled = circleEnabled;
+        invalidate();
+    }
+
+    public void processMotionEvent(MotionEvent ev) {
+        circleEnabled = true;
+        float x = ev.getX();
+        float y = ev.getY();
+        switch(ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mFirstTouchX = mTouchX = x;
+                mFirstTouchY = mTouchY = y;
+                super.performClick();
+
+            case MotionEvent.ACTION_UP:
+
+            case MotionEvent.ACTION_MOVE:
+                mTouchX = x;
+                mTouchY = y;
+
+        }
+        if (traceMode) {
+            circleTraceArrayList.add(new CircleTrace((int) mTouchX, (int) mTouchY));
+        }
         invalidate();
     }
 
@@ -213,11 +203,6 @@ public class Drawing2Dview extends View {
         }
         mTouchX = mTouchY = -100;
         invalidate();
-    }
-
-    public interface DrawingViewTouchListener {
-        void onTouchMove(float touch_x, float touch_y);
-        void onTouchUp(float touch_x, float touch_y);
     }
 
     private class CircleTrace {

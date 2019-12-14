@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dview.DrawingViewTouchListener {
+public class Drawing2DActivity extends AppCompatActivity {
 
     private static TextView textViewTop;
     protected static Drawing2Dview drawing2Dview;
@@ -38,11 +38,16 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         textViewTop.setText(". . . .");
         drawing2Dview = findViewById(R.id.drawind2Dview);
         drawing2Dview.setCircleEnabled(false);
-
-        drawing2Dview.setOnClickListener(new View.OnClickListener() {
+        drawing2Dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("Activity onClickListener:", "run.");
+            public boolean onTouch(View v, MotionEvent event) {
+                drawing2Dview.processMotionEvent(event);
+                textViewTop.setText(String.format(Locale.ITALIAN, "X=%.1f   Y=%.1f", drawing2Dview.getmTouchX(), drawing2Dview.getmTouchY()));
+                if (!drawing2Dview.isTraceMode() && event.getAction() == MotionEvent.ACTION_UP) {
+                    ResetCircle resetCircle = new ResetCircle();
+                    resetCircle.execute();
+                }
+                return true;
             }
         });
 
@@ -75,18 +80,6 @@ public class Drawing2DActivity extends AppCompatActivity implements Drawing2Dvie
         }
 
         return super.onOptionsItemSelected(item);
-    }
-    
-    @Override
-    public void onTouchMove(float touch_x, float touch_y) {
-        textViewTop.setText(String.format(Locale.ITALIAN, "X=%.1f   Y=%.1f", touch_x, touch_y));
-    }
-
-    @Override
-    public void onTouchUp(float touch_x, float touch_y) {
-        Log.d("Drawing2Dview", "onTouchUp()");
-        ResetCircle resetCircle = new ResetCircle();
-        resetCircle.execute();
     }
 
     // TODO: 07/12/2019 Implement sharing the canvas with other apps 

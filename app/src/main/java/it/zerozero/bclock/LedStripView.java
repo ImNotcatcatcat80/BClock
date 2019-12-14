@@ -47,12 +47,14 @@ public class LedStripView extends View {
         mLedPaint.setColor(Color.BLACK);
         mLedPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mLedPaint.setStrokeWidth(1);
+        /*
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
+         */
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

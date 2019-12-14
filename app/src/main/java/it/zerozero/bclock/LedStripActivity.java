@@ -147,16 +147,6 @@ public class LedStripActivity extends AppCompatActivity {
                 int b = numberPickerB.getValue();
                 ledStripView.setmLedOnColor(r, g, b);
                 int[] colorsAr = ledStripView.getLedColorsAr(); // new int[ledStripCommands.LEDSTRIP_LENGTH];
-                /*
-                for (int q = 0; q < ledStripCommands.LEDSTRIP_LENGTH; q++) {
-                    if ((q < seekBarLeds.getProgress() &! ledStripReversed) || (q >= seekBarLeds.getProgress() && ledStripReversed)) {
-                        colorsAr[q] = Color.rgb(r, g, b);
-                    }
-                    else {
-                        colorsAr[q] = Color.BLACK;
-                    }
-                }
-                */
                 ledStripCommands.setLedColorsAr(colorsAr);
                 SendLedCommands sendLedCommands = new SendLedCommands();
                 sendLedCommands.setData(editTextLedStripIP.getText().toString(), 19881);
