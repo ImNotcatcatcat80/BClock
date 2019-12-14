@@ -67,7 +67,7 @@ public class Drawing2Dview extends View {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Drawing2Dview.super.performClick();
             }
         });
         setOnTouchListener(new OnTouchListener() {
@@ -213,11 +213,6 @@ public class Drawing2Dview extends View {
         }
         mTouchX = mTouchY = -100;
         invalidate();
-    }
-
-    public void setOnTouchListener(DrawingViewTouchListener drawingViewTouchListener) {
-        // Not needed, as mListener is already set in onAttachedToWindow
-        mListener = (DrawingViewTouchListener) getContext();
     }
 
     public interface DrawingViewTouchListener {
