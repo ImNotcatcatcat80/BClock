@@ -141,6 +141,11 @@ public class Drawing2Dview extends View {
     }
 
     @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
+    @Override
     public String toString() {
         return super.toString();
     }
@@ -158,7 +163,7 @@ public class Drawing2Dview extends View {
             case MotionEvent.ACTION_DOWN:
                 mFirstTouchX = mTouchX = x;
                 mFirstTouchY = mTouchY = y;
-                super.performClick();
+                performClick();
 
             case MotionEvent.ACTION_UP:
 
@@ -201,7 +206,7 @@ public class Drawing2Dview extends View {
         else {
             circleTraceArrayList = null;
         }
-        mTouchX = mTouchY = -100;
+        mTouchX = mTouchY = mFirstTouchX = mFirstTouchY= -100;
         invalidate();
     }
 
