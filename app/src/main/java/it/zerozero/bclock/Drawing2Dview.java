@@ -71,13 +71,15 @@ public class Drawing2Dview extends View {
 
         Log.d("D2D", "View OD");
         int vertRects = (int) getHeight() / 100;
-        int blueStep = (int) (220 / vertRects) - 1;
+        int blueStep = (int) (224 / vertRects) - 1;
+        int redStep = (int) (64 / vertRects) - 1;
+        int greenStep = (int) (128 / 2 / vertRects) - 1;
         int widthTot = getWidth();
         // Draw a vertical gradient
-        mRectPaint.setColor(Color.rgb(20, 80, 220));
+        mRectPaint.setColor(Color.rgb(64, 128, 224));
         for (int r = 0; r < vertRects; r++) {
             canvas.drawRect(0, r * 100, widthTot, r * 100 + 100, mRectPaint);
-            mRectPaint.setColor(Color.rgb(20, 80, 220 - blueStep * r));
+            mRectPaint.setColor(Color.rgb(64 - redStep * r, 128 - greenStep * r, 224 - blueStep * r));
             canvas.drawLine(0, r * 100 + 100, widthTot, r * 100 + 100, mCirclePaint);
         }
         mLinePaint.setPathEffect(null);
@@ -156,26 +158,28 @@ public class Drawing2Dview extends View {
     }
 
     public void processMotionEvent(MotionEvent ev) {
-        circleEnabled = true;
-        float x = ev.getX();
-        float y = ev.getY();
-        switch(ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mFirstTouchX = mTouchX = x;
-                mFirstTouchY = mTouchY = y;
-                performClick();
+        if (ev != null) {
+            circleEnabled = true;
+            float x = ev.getX();
+            float y = ev.getY();
+            switch(ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mFirstTouchX = mTouchX = x;
+                    mFirstTouchY = mTouchY = y;
+                    performClick();
 
-            case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_UP:
 
-            case MotionEvent.ACTION_MOVE:
-                mTouchX = x;
-                mTouchY = y;
+                case MotionEvent.ACTION_MOVE:
+                    mTouchX = x;
+                    mTouchY = y;
 
+            }
+            if (traceMode) {
+                circleTraceArrayList.add(new CircleTrace((int) mTouchX, (int) mTouchY));
+            }
+            invalidate();
         }
-        if (traceMode) {
-            circleTraceArrayList.add(new CircleTrace((int) mTouchX, (int) mTouchY));
-        }
-        invalidate();
     }
 
     public float getmTouchX() {
