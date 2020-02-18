@@ -55,6 +55,12 @@
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".SensorXYactivity"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".SensorsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".StopwatchActivity"
             android:configChanges="orientation|screenSize"
             android:parentActivityName=".MainActivity"

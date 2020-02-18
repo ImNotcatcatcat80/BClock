@@ -101,4 +101,15 @@
         android:layout_alignBottom="@+id/textViewLabelVal2"
         android:layout_toEndOf="@+id/textViewLabelVal2" />
 
+    <Button
+        android:id="@+id/buttonXY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextSensorInfo"
+        android:layout_alignEnd="@+id/editTextSensorInfo"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        android:text="XY" />
+
 </RelativeLayout>

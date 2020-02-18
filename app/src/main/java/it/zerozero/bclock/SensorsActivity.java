@@ -1,6 +1,7 @@
 package it.zerozero.bclock;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private Sensor mSelectedSensor;
     private List<Sensor> mSensorList;
     private ArrayList<String> mSensorNames;
+    private Button buttonXY;
     private TextView mLabelVal0;
     private TextView mLabelVal1;
     private TextView mLabelVal2;
@@ -49,6 +52,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         mVal0 = (TextView) findViewById(R.id.textViewVal0);
         mVal1 = (TextView) findViewById(R.id.textViewVal1);
         mVal2 = (TextView) findViewById(R.id.textViewVal2);
+        buttonXY = (Button) findViewById(R.id.buttonXY);
         mEditTextSensorInfo.setTextIsSelectable(false);
         mTextViewSensorInfo.setVisibility(View.GONE);
         mEditTextSensorInfo.setVisibility(View.GONE);
@@ -109,6 +113,13 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 mTextViewSensorInfo.setVisibility(View.GONE);
                 mEditTextSensorInfo.setVisibility(View.GONE);
                 mEditTextSensorInfo.setText("");
+            }
+        });
+        buttonXY.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent sensorXYintent = new Intent(getApplicationContext(), SensorXYactivity.class);
+                startActivity(sensorXYintent);
             }
         });
     }
