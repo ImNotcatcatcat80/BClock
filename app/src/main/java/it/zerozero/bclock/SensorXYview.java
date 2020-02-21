@@ -22,7 +22,7 @@ public class SensorXYview extends View {
     private Paint mTextPaint, mRectPaint, mLinePaint, mCirclePaint;
     private DashPathEffect dashedLineEffect;
     private float mTouchX, mTouchY, mFirstTouchX, mFirstTouchY;
-    private float vectorX, vectorY, motionX, motionY;
+    private float vectorX, vectorY;
 
     public SensorXYview(Context context) {
         super(context);
@@ -69,16 +69,13 @@ public class SensorXYview extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        int vertDivs = (int) getHeight() / 100;
-        int horDivs = (int) getWidth() / 100;
+        int vertDivs = 8;
+        int horDivs = 8;
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
         // Draw Background
         canvas.drawColor(Color.DKGRAY);
-
-        // Useless here...
-        mRectPaint.setColor(Color.rgb(20, 80, 220));
 
         // Draw axes
         mLinePaint.setStrokeWidth(1);
@@ -87,10 +84,10 @@ public class SensorXYview extends View {
         canvas.drawLine(0, centerY, getWidth(), centerY, mLinePaint);
 
         for (int hm = -horDivs; hm < horDivs; hm++) {
-            canvas.drawLine(centerX + 200 * hm, centerY + 20, centerX + 200 * hm, centerY - 20, mLinePaint);
+            canvas.drawLine(getWidth() / 8 * hm, centerY + 20, getWidth() / 8 * hm, centerY - 20, mLinePaint);
         }
         for (int vm = -vertDivs; vm < vertDivs; vm++) {
-            canvas.drawLine(centerX - 20, centerY + 200 * vm, centerX + 20, centerY + 200 * vm, mLinePaint);
+            canvas.drawLine(centerX - 20, getHeight() / 8 * vm, centerX + 20, getHeight() / 8 * vm, mLinePaint);
         }
 
 
@@ -179,11 +176,10 @@ public class SensorXYview extends View {
         invalidate();
     }
 
-    public void redrawVectorMotion(float x, float y, float motion_x, float motion_y) {
-        this.vectorX = (int) (x * -100);
-        this.vectorY = (int) (y * 100);
-        this.motionX = (int) (motion_x * 250);
-        this.motionY = (int) (motion_y * -250);
+    public void redrawVector(float x, float y) {
+
+        this.vectorX = (int) (x * getWidth() / -2);
+        this.vectorY = (int) (y * getHeight() / 2);
         invalidate();
     }
 

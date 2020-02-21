@@ -21,14 +21,14 @@ import java.util.Locale;
 public class SensorXYactivity extends AppCompatActivity implements SensorEventListener {
 
     private static TextView headerTextView;
-    private static SensorXYview drawing2Dview;
+    private static SensorXYview sensorXYview;
     private static SensorManager sensorManager;
-    private static Sensor accelSensor;
+    private static Sensor sensor;
+    private static float sensorScale = 1f;
     private long previousTimeMillis = System.currentTimeMillis();
-    private float motionX, motionY;
-    private float zeroX = 0f;
-    private float zeroY = 0f;
+
     private boolean isZeroing = false;
+    private AppSynchronizer appSynchronizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,41 +37,41 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab_play = findViewById(R.id.fab_plus);
-        fab_play.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab_plus = findViewById(R.id.fab_plus);
+        fab_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Scale UP", Snackbar.LENGTH_LONG)
+                sensorScale = sensorScale / 2;
+                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_LONG)
                         .setAction("ScaleUP", null).show();
-                motionX = motionY = 0f;
-                isZeroing = true;
             }
         });
-        FloatingActionButton fab_pause = findViewById(R.id.fab_minus);
-        fab_pause.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab_minus = findViewById(R.id.fab_minus);
+        fab_minus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Snackbar.make(v, "Scale DOWN", Snackbar.LENGTH_LONG)
+            public void onClick(View view) {
+                sensorScale = sensorScale * 2;
+                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_LONG)
                         .setAction("ScaleDN", null).show();
-                motionX = motionY = 0f;
-                isZeroing = true;
             }
         });
 
+        appSynchronizer = AppSynchronizer.getInstance();
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-        accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener((SensorEventListener) this, accelSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        sensor = appSynchronizer.getSensor(); //sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorScale = sensor.getMaximumRange();
+        sensorManager.registerListener((SensorEventListener) this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
 
         headerTextView = findViewById(R.id.headerTextView);
-        headerTextView.setText("X Y Axis view");
+        headerTextView.setText(sensor.getName());
 
-        drawing2Dview = findViewById(R.id.SensorXYview);
-        drawing2Dview.setCircleEnabled(true);
-        drawing2Dview.setTraceMode(false);
-        drawing2Dview.setOnTouchListener(new View.OnTouchListener() {
+        sensorXYview = findViewById(R.id.SensorXYview);
+        sensorXYview.setCircleEnabled(true);
+        sensorXYview.setTraceMode(false);
+        sensorXYview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // drawing2Dview.processMotionEvent(event);
+                // sensorXYview.processMotionEvent(event);
                 return true;
             }
         });
@@ -101,17 +101,12 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        drawing2Dview.redrawVectorMotion(event.values[0], event.values[1], motionX, motionY);
-        long timeMillis = System.currentTimeMillis();
-
-        if(isZeroing) {
-            zeroX = event.values[0];
-            zeroY = event.values[1];
-            isZeroing = false;
+        if (event.values.length > 1) {
+            sensorXYview.redrawVector(event.values[0] / sensorScale, event.values[1] / sensorScale);
+        } else {
+            sensorXYview.redrawVector(event.values[0] / sensorScale, 0);
         }
-        motionX = 0;
-        motionY = 0;
-        headerTextView.setText(String.format(Locale.ITALIAN, "accelermeter X Y"));
+        long timeMillis = System.currentTimeMillis();
         previousTimeMillis = timeMillis;
     }
 
@@ -119,4 +114,5 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }

@@ -37,6 +37,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private TextView mVal0;
     private TextView mVal1;
     private TextView mVal2;
+    private AppSynchronizer appSynchronizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         for (Sensor sensorToName : mSensorList) {
             mSensorNames.add(sensorToName.getName());
         }
+
+        appSynchronizer = AppSynchronizer.getInstance();
 
         mEditTextSensorInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +122,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             @Override
             public void onClick(View v) {
                 Intent sensorXYintent = new Intent(getApplicationContext(), SensorXYactivity.class);
+                appSynchronizer.setSensor(mSelectedSensor);
                 startActivity(sensorXYintent);
             }
         });
