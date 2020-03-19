@@ -116,11 +116,6 @@ public class SensorXYview extends View {
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
-
-    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         // Initialization, not necessary
@@ -130,12 +125,6 @@ public class SensorXYview extends View {
             invalidate();
             initialized = true;
         }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
     }
 
     @Override

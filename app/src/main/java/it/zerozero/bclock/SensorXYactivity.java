@@ -25,7 +25,6 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
     private static SensorManager sensorManager;
     private static Sensor sensor;
     private static float sensorScale = 1f;
-    private long previousTimeMillis = System.currentTimeMillis();
 
     private boolean isZeroing = false;
     private AppSynchronizer appSynchronizer;
@@ -42,7 +41,7 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View view) {
                 sensorScale = sensorScale / 2;
-                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_SHORT)
                         .setAction("ScaleUP", null).show();
             }
         });
@@ -51,7 +50,7 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View view) {
                 sensorScale = sensorScale * 2;
-                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, String.format(Locale.ITALIAN, "Scale = %6f", sensorScale), Snackbar.LENGTH_SHORT)
                         .setAction("ScaleDN", null).show();
             }
         });
@@ -71,7 +70,7 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
         sensorXYview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // sensorXYview.processMotionEvent(event);
+                sensorXYview.invalidate();
                 return true;
             }
         });
@@ -79,16 +78,12 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_sensor_xy, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -107,7 +102,6 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
             sensorXYview.redrawVector(event.values[0] / sensorScale, 0);
         }
         long timeMillis = System.currentTimeMillis();
-        previousTimeMillis = timeMillis;
     }
 
     @Override

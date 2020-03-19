@@ -60,6 +60,8 @@
             android:parentActivityName=".SensorsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
+            <!--   comment    -->
+
         <activity
             android:name=".StopwatchActivity"
             android:configChanges="orientation|screenSize"
