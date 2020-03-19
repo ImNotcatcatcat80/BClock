@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -24,9 +25,11 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
     private static SensorXYview sensorXYview;
     private static SensorManager sensorManager;
     private static Sensor sensor;
+    private static MenuItem filteringMenuItem;
     private static float sensorScale = 1f;
-
-    private boolean isZeroing = false;
+    private int num_samples = 1;
+    private int sampling_cycle = 0;
+    private float[] samples = new float[2];
     private AppSynchronizer appSynchronizer;
 
     @Override
@@ -67,18 +70,14 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
         sensorXYview = findViewById(R.id.SensorXYview);
         sensorXYview.setCircleEnabled(true);
         sensorXYview.setTraceMode(false);
-        sensorXYview.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                sensorXYview.invalidate();
-                return true;
-            }
-        });
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_sensor_xy, menu);
+        filteringMenuItem = menu.findItem(R.id.action_filter);
+        filteringMenuItem.setTitle("Filter = 1 : 1");
         return true;
     }
 
@@ -86,8 +85,20 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_filter) {
+            if (num_samples == 1)  {
+                num_samples = 10;
+                filteringMenuItem.setTitle("Filter = 1 : 10");
+            }
+            else if (num_samples == 10) {
+                num_samples = 50;
+                filteringMenuItem.setTitle("Filter = 1 : 50");
+            }
+            else {
+                num_samples = 1;
+                filteringMenuItem.setTitle("Filter = 1 : 1");
+                Toast.makeText(this, "Filtering = 1 : 1", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
@@ -96,12 +107,25 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        float value_x = event.values[0] / sensorScale;
+        float value_y = 0f;
         if (event.values.length > 1) {
-            sensorXYview.redrawVector(event.values[0] / sensorScale, event.values[1] / sensorScale);
-        } else {
-            sensorXYview.redrawVector(event.values[0] / sensorScale, 0);
+            value_y = event.values[1] / sensorScale;
         }
-        long timeMillis = System.currentTimeMillis();
+
+        while(sampling_cycle < num_samples) {
+            samples[0] = samples[0] + value_x;
+            samples[1] = samples[1] + value_y;
+            sampling_cycle++;
+        }
+
+        if (sampling_cycle >= num_samples) {
+            sampling_cycle = 0;
+            sensorXYview.redrawVector(samples[0] / (float) num_samples, samples[1] / (float) num_samples);
+            samples[0] = 0f;
+            samples[1] = 0f;
+        }
+
     }
 
     @Override

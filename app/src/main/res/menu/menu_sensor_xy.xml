@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_X_Y_axes"
+        android:id="@+id/action_filter"
         android:orderInCategory="100"
-        android:title="axes X Y" />
+        android:title="filter..." />
 </menu>
