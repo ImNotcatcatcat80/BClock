@@ -87,12 +87,12 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
 
         if (id == R.id.action_filter) {
             if (num_samples == 1)  {
+                num_samples = 4;
+                filteringMenuItem.setTitle("Filter = 1 : 4");
+            }
+            else if (num_samples == 4) {
                 num_samples = 10;
                 filteringMenuItem.setTitle("Filter = 1 : 10");
-            }
-            else if (num_samples == 10) {
-                num_samples = 50;
-                filteringMenuItem.setTitle("Filter = 1 : 50");
             }
             else {
                 num_samples = 1;
@@ -113,7 +113,7 @@ public class SensorXYactivity extends AppCompatActivity implements SensorEventLi
             value_y = event.values[1] / sensorScale;
         }
 
-        while(sampling_cycle < num_samples) {
+        if (sampling_cycle < num_samples) {
             samples[0] = samples[0] + value_x;
             samples[1] = samples[1] + value_y;
             sampling_cycle++;
